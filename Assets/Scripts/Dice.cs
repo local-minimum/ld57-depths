@@ -82,7 +82,7 @@ public class Dice : MonoBehaviour
     }
 
     [ContextMenu("Roll")]
-    public void Roll() => Roll(Vector3.zero);
+    public void Roll() => Roll(Vector3.zero, Vector3.right, Vector3.up);
 
     bool rolling;
     Vector3 rollOrigin;
@@ -90,10 +90,15 @@ public class Dice : MonoBehaviour
     float[] relativeParts;
     int lastArc = -1;
     Vector3 spinVector;
+    Vector3 rollDirection;
+    Vector3 rollUpDirection;
 
-    public void Roll(Vector3 origin)
+    public void Roll(Vector3 origin, Vector3 direction, Vector3 up)
     {
         if (rolling) return;
+
+        rollDirection = direction;
+        rollUpDirection = up;
 
         rolling = true;
         rollOrigin = origin;
@@ -182,8 +187,7 @@ public class Dice : MonoBehaviour
 
         // Debug.Log(xOffset);
 
-
-        transform.position = rollOrigin + new Vector3(xOffset, yOffset);
+        transform.position = rollOrigin + rollDirection * xOffset + rollUpDirection * yOffset;
 
         if (finalizeRoll) FinalizeRoll();
     }

@@ -19,7 +19,6 @@ public class DiceHand : MonoBehaviour
 
     private void Start()
     {
-
         for (int i = 0; i<startDiceCount; i++)
         {
             var die = Instantiate(startDice, transform);
@@ -27,6 +26,25 @@ public class DiceHand : MonoBehaviour
             dice.Add(die);
         }
         
+    }
+
+    private void OnEnable()
+    {
+        Door.OnBreach += Door_OnBreach;    
+    }
+
+    private void OnDisable()
+    {
+        Door.OnBreach -= Door_OnBreach;
+    }
+
+    private void Door_OnBreach(Door door)
+    {
+        if (door.LeadsToDanger)
+        {
+            RollHand();
+            PlayerController.instance.InFight = true;
+        }
     }
 
     [ContextMenu("Roll Hand")]
@@ -52,9 +70,9 @@ public class DiceHand : MonoBehaviour
         nextRoll = Time.timeSinceLevelLoad + timeBetweenDice;
         var die = dice[rollIdx];
         die.gameObject.SetActive(true);
-        var start = transform.TransformVector(diceSpacing * rollIdx);
+        var start = transform.TransformPoint(diceSpacing * rollIdx);
         die.transform.position = start;
-        die.Roll(start);
+        die.Roll(start, transform.right, Vector3.up);
         rollIdx++;
 
         if (rollIdx >= dice.Count)
