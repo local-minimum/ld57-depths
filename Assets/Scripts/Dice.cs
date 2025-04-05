@@ -53,6 +53,15 @@ public class Dice : MonoBehaviour
     [SerializeField]
     float spinFactor = 100f;
 
+    [SerializeField]
+    Color dieColor;
+
+    public Color DieColor => dieColor;
+
+    [SerializeField]
+    Color dieTextColor;
+    public Color DieTextColor => dieTextColor;
+
     IEnumerable<Transform> Sentinels
     {
         get
@@ -66,10 +75,9 @@ public class Dice : MonoBehaviour
         }
     }
 
-    public int Value
+    int CalculateValue()
     {
-        get
-        {
+
             var highest = Sentinels.OrderBy(s => s.transform.position.y).Last();
 
             if (highest == upSentinel) return upValue;
@@ -78,8 +86,20 @@ public class Dice : MonoBehaviour
             if (highest == eastSentinel) return eastValue;
             if (highest == northSentinel) return northValue;
             return southValue;
-        }
     }
+
+    void SetValue()
+    {
+        _Value = CalculateValue();
+    }
+
+    void RemoveValue()
+    {
+        _Value = 0;
+    }
+
+    private int _Value;
+    public int Value => _Value;
 
     [ContextMenu("Roll")]
     public void Roll() => Roll(Vector3.zero, Vector3.right, Vector3.up);
@@ -96,6 +116,8 @@ public class Dice : MonoBehaviour
     public void Roll(Vector3 origin, Vector3 direction, Vector3 up)
     {
         if (rolling) return;
+
+        RemoveValue();
 
         rollDirection = direction;
         rollUpDirection = up;
@@ -220,6 +242,7 @@ public class Dice : MonoBehaviour
         euler.z = Mathf.Round(euler.z / 90f) * 90f;
         transform.eulerAngles = euler;
 
+        SetValue();
         OnRoll?.Invoke(this);
     }
 
