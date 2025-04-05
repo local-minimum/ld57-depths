@@ -32,8 +32,13 @@ public class DiceHand : MonoBehaviour
     [ContextMenu("Roll Hand")]
     void RollHand()
     {
+        foreach (var die in dice)
+        {
+            die.gameObject.SetActive(false);
+        }
         rolling = true;
         nextRoll = Time.timeSinceLevelLoad;
+        rollIdx = 0;
     }
 
     bool rolling;
