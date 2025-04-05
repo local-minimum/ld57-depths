@@ -26,6 +26,8 @@ public class FightActionUI : MonoBehaviour
     [SerializeField, Header("Dice")]
     List<FightActionDiceSlotUI> diceSlots = new List<FightActionDiceSlotUI>();
 
+    IEnumerable<FightActionDiceSlotUI> Slots => diceSlots.Where(s => s.gameObject.activeSelf);
+
     [SerializeField, Header("Action Button Settings")]
     Sprite activateSprite;
 
@@ -87,8 +89,8 @@ public class FightActionUI : MonoBehaviour
         }
     }
 
-    bool AllSlotsFilled => diceSlots.All(slot => slot.gameObject.activeSelf && slot.Filled);
-    bool AnySlotFilled => diceSlots.Any(slot => slot.gameObject.activeSelf && slot.Filled);
+    bool AllSlotsFilled => Slots.All(slot => slot.Filled);
+    bool AnySlotFilled => Slots.Any(slot => slot.Filled);
 
     enum ButtonAction { None, Undo, Activate };
 
@@ -96,7 +98,7 @@ public class FightActionUI : MonoBehaviour
     ButtonAction SecondActionButton;
 
     [ContextMenu("Sync")]
-    void Sync()
+    public void Sync()
     {
         if (cooldown > 0)
         {
@@ -144,7 +146,14 @@ public class FightActionUI : MonoBehaviour
 
     void PerformAction(ButtonAction action)
     {
-        // TODO: Do actions
-
+        switch (action)
+        {
+            case ButtonAction.Undo:
+                foreach (var slot in Slots)
+                {
+                    slot.ReturnDie();
+                }
+                break;
+        }
     }
 }

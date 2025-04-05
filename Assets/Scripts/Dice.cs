@@ -252,7 +252,7 @@ public class Dice : MonoBehaviour
         Debug.Log($"{name}: {Value}");
     }
 
-    public static Dice Focus { get; private set; }
+    public static Dice Focus { get; set; }
 
     private void OnMouseEnter()
     {

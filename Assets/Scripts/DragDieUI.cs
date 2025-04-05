@@ -3,7 +3,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DragDieUI : Singleton<DragDieUI, DragDieUI> 
+[RequireComponent(typeof(RectTransform))]
+public class DragDieUI : Singleton<DragDieUI, DragDieUI>
 {
     [SerializeField]
     Image image;
@@ -20,8 +21,6 @@ public class DragDieUI : Singleton<DragDieUI, DragDieUI>
         image.color = die.DieColor;
         text.text = die.Value.ToString();
         text.color = die.DieTextColor;
-        image.enabled = true;
-        text.enabled = true;
     }
 
     public void Clear()
@@ -33,5 +32,13 @@ public class DragDieUI : Singleton<DragDieUI, DragDieUI>
     private void Start()
     {
         if (die == null) Clear();
+    }
+
+    public void SyncPosition(Vector2 position)
+    {
+        var parent = transform.parent;
+        (transform as RectTransform).anchoredPosition = parent == null ? position : parent.InverseTransformPoint(position);
+        image.enabled = true;
+        text.enabled = true;
     }
 }

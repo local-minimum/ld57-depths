@@ -353,8 +353,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98cb168851305634a92dd577ebd5c62d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  background: {fileID: 6333389580860263523}
   diceImage: {fileID: 5302350740109577261}
   diceText: {fileID: 4001015908653730685}
+  focusColor: {r: 0.13296545, g: 0.33962262, b: 0.306524, a: 0.85882354}
+  normalColor: {r: 0, g: 0, b: 0, a: 0.50980395}
 --- !u!114 &5572048875496993141
 MonoBehaviour:
   m_ObjectHideFlags: 0

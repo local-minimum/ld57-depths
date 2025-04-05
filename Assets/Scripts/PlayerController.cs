@@ -112,6 +112,8 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
                 draggedDie = Dice.Focus;
                 DragDieUI.instance.SetFromDie(draggedDie);
                 draggedDie.gameObject.SetActive(false);
+                Cursor.visible = false;
+                Dice.Focus = null;  
                 return;
             }
 
@@ -136,15 +138,27 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
             if (draggedDie != null)
             {
 
-                // TODO: Deal with scenarios of where dropped
-                draggedDie.gameObject.SetActive(true);
-                DragDieUI.instance.Clear();
+                if (FightActionDiceSlotUI.FocusedSlot != null)
+                {
+                    FightActionDiceSlotUI.FocusedSlot.TakeDie(draggedDie);
+                } else
+                {
+                    draggedDie.gameObject.SetActive(true);
+                }
 
+                DragDieUI.instance.Clear();
                 draggedDie = null;
+                Cursor.visible = true;
             }
-        } else if (draggedDie != null)
+        }
+    }
+
+    public void OnMovePointer(InputAction.CallbackContext context)
+    {
+        if (draggedDie != null)
         {
-            // TODO: Sync dice position
+            var position = context.ReadValue<Vector2>();
+            DragDieUI.instance.SyncPosition(position);
         }
     }
 
