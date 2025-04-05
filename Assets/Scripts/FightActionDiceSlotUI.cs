@@ -116,6 +116,17 @@ public class FightActionDiceSlotUI : MonoBehaviour, IDragHandler, IBeginDragHand
             {
                 FocusedSlot.TakeDie(activeDie);
                 Clear();
+            } else if (FightActionUI.Focus != null)
+            {
+                var slot = FightActionUI.Focus.FirstEmptySlot; 
+                if (slot != null)
+                {
+                    slot.TakeDie(activeDie);
+                    Clear();
+                } else
+                {
+                    TakeDie(activeDie);
+                }
             } else
             {
                 TakeDie(activeDie);

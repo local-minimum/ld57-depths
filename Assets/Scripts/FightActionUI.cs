@@ -57,6 +57,17 @@ public class FightActionUI : MonoBehaviour
 
     int cooldown;
 
+    public bool Available => cooldown <= 0;
+
+    public FightActionDiceSlotUI FirstEmptySlot
+    {
+        get
+        {
+            if (!Available) return null;
+            return Slots.FirstOrDefault(s => !s.Filled);
+        }
+    }
+
     public int Value
     {
         get
@@ -154,6 +165,21 @@ public class FightActionUI : MonoBehaviour
                     slot.ReturnDie();
                 }
                 break;
+        }
+    }
+
+    public static FightActionUI Focus { get; private set; }
+
+    public void OnPointerEnter()
+    {
+        Focus = this;
+    }
+
+    public void OnPointerExit()
+    {
+        if (Focus == this)
+        {
+            Focus = null;
         }
     }
 }

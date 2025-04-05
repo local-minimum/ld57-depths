@@ -141,6 +141,16 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
                 if (FightActionDiceSlotUI.FocusedSlot != null)
                 {
                     FightActionDiceSlotUI.FocusedSlot.TakeDie(draggedDie);
+                } else if (FightActionUI.Focus != null)
+                {
+                    var slot = FightActionUI.Focus.FirstEmptySlot;
+                    if (slot != null)
+                    {
+                        slot.TakeDie(draggedDie);
+                    } else
+                    {
+                        draggedDie.gameObject.SetActive(true);
+                    }
                 } else
                 {
                     draggedDie.gameObject.SetActive(true);
