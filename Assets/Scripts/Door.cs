@@ -28,6 +28,13 @@ public class Door : MonoBehaviour
     [SerializeField]
     float explosionDuration = 1f;
 
+    [SerializeField]
+    Collider focusCollider;
+
+    [SerializeField]
+    string breachHint = "Click <color=\"red\">door</color> to breach it!";
+    [SerializeField]
+    string notInFightHint = "Cannot breach doors while in a fight!";
     public bool LeadsToDanger => leadsTo.HasDanger;
 
     private void Awake()
@@ -35,6 +42,11 @@ public class Door : MonoBehaviour
         foreach (var fragment in doorFragments)
         {
             fragment.gameObject.SetActive(false);
+        }
+
+        if (PlayerController.instance.currentTile != breachOrigin)
+        { 
+            focusCollider.enabled = false;
         }
     }
 
@@ -48,12 +60,56 @@ public class Door : MonoBehaviour
         PlayerController.OnEnterTile -= PlayerController_OnEnterTile;
     }
 
+    bool canBreach;
+    string lastHint;
     private void PlayerController_OnEnterTile(PlayerController instance)
     {
+        canBreach = false;
+
         if (!breached && instance.currentTile == breachOrigin)
         {
-            Breach();
+            if (instance.InFight)
+            {
+                lastHint = notInFightHint;
+            } else if (!breached)
+            {
+                lastHint = breachHint;
+                canBreach = true;
+            } else
+            {
+                lastHint = null;
+            }
+
+            if (!string.IsNullOrEmpty(lastHint))
+            {
+                HintUI.instance.SetText(lastHint);
+            }
+        } else if (!string.IsNullOrEmpty(lastHint))
+        {
+            HintUI.instance.HideText(lastHint);
+            lastHint = null;
         }
+
+        focusCollider.enabled = canBreach;
+    }
+
+    public static Door FocusDoor { get; private set; }
+
+    private void OnMouseEnter()
+    {
+        if (canBreach)
+        {
+            FocusDoor = this;
+        }
+    }
+
+    private void OnMouseExit()
+    {
+        if (FocusDoor == this)
+        {
+            FocusDoor = null;
+        }
+        
     }
 
     bool breached;
@@ -64,6 +120,12 @@ public class Door : MonoBehaviour
     public void Breach()
     {
         if (breached) return;
+
+        if (!string.IsNullOrEmpty(lastHint))
+        {
+            HintUI.instance.HideText(lastHint);
+            lastHint = null;
+        }
 
         leadsTo.AnimateIn(breachOrigin.coordinates);
         solidDoor.SetActive(false);

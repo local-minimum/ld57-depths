@@ -108,6 +108,12 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
         {
             if (walking || InFight && FightWalkDistance <= 0) return;
 
+            if (Door.FocusDoor != null)
+            {
+                Door.FocusDoor.Breach();
+                return;
+            }
+
             var focusTile = Tile.focusTile;
             if (focusTile != null)
             {

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2013187956957684524}
   - component: {fileID: 2577400999630387222}
+  - component: {fileID: 4500457511675447975}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -103,6 +104,30 @@ MonoBehaviour:
   explosionSize: 3
   explosionForce: 250
   explosionDuration: 1
+  focusCollider: {fileID: 4500457511675447975}
+  breachHint: Click <color="red">door</color> to breach it!
+  notInFightHint: Cannot breach doors while in a fight!
+--- !u!65 &4500457511675447975
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2349300608288835962}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.40684414, y: 1.6362263, z: 1.358652}
+  m_Center: {x: 0.013793945, y: 0.7888953, z: 0.00000017881393}
 --- !u!1001 &4578571784295510342
 PrefabInstance:
   m_ObjectHideFlags: 0
