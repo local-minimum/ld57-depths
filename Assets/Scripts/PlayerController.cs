@@ -102,10 +102,19 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
         }
     }
 
+    Dice draggedDie;
     public void Interact(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
+            if (Dice.Focus != null)
+            {
+                draggedDie = Dice.Focus;
+                DragDieUI.instance.SetFromDie(draggedDie);
+                draggedDie.gameObject.SetActive(false);
+                return;
+            }
+
             if (walking || InFight && FightWalkDistance <= 0) return;
 
             if (Door.FocusDoor != null)
@@ -122,6 +131,20 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
                     Walk(path);
                 }
             }
+        } else if (context.canceled)
+        {
+            if (draggedDie != null)
+            {
+
+                // TODO: Deal with scenarios of where dropped
+                draggedDie.gameObject.SetActive(true);
+                DragDieUI.instance.Clear();
+
+                draggedDie = null;
+            }
+        } else if (draggedDie != null)
+        {
+            // TODO: Sync dice position
         }
     }
 

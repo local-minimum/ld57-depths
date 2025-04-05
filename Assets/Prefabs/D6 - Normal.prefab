@@ -196,6 +196,7 @@ GameObject:
   m_Component:
   - component: {fileID: 966744698981200659}
   - component: {fileID: 3371263491653898962}
+  - component: {fileID: 8014997677891061389}
   m_Layer: 0
   m_Name: D6 - Normal
   m_TagString: Untagged
@@ -254,6 +255,29 @@ MonoBehaviour:
   arcSizeDecay: 0.5
   rollDuration: 1.5
   spinFactor: 1000
+  dieColor: {r: 0.7924528, g: 0.03364185, b: 0.05170871, a: 1}
+  dieTextColor: {r: 0.9433962, g: 0.5829477, b: 0.5829477, a: 1}
+--- !u!65 &8014997677891061389
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7541472267150171239}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.22477308, y: 0.21691573, z: 0.21691604}
+  m_Center: {x: 0.000000029802322, y: -0.0013094842, z: 0.0013094395}
 --- !u!1001 &8738440141913506535
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -251,4 +251,24 @@ public class Dice : MonoBehaviour
     {
         Debug.Log($"{name}: {Value}");
     }
+
+    public static Dice Focus { get; private set; }
+
+    private void OnMouseEnter()
+    {
+        if (!rolling)
+        {
+            Focus = this;
+        }
+        
+    }
+
+    private void OnMouseExit()
+    {
+        if (Focus == this)
+        {
+            Focus = null;
+        }
+        
+    }
 }
