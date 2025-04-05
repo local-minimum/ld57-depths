@@ -131,6 +131,14 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
                 if (currentTile.ClosestPathTo(focusTile, out var path, InFight ? FightWalkDistance : 100))
                 {
                     Walk(path);
+                    if (InFight)
+                    {
+                        FightWalkDistance -= Mathf.Max(0, path.Count - 1);
+                        if (FightWalkDistance == 0 && FightActionUI.Active != null)
+                        {
+                            FightActionUI.Active.ConsumedWalk();
+                        }
+                    }
                 }
             }
         } else if (context.canceled)
@@ -140,7 +148,10 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
 
                 if (FightActionDiceSlotUI.FocusedSlot != null)
                 {
-                    FightActionDiceSlotUI.FocusedSlot.TakeDie(draggedDie);
+                    if (!FightActionDiceSlotUI.FocusedSlot.TakeDie(draggedDie))
+                    {
+                        draggedDie.gameObject.SetActive(true);
+                    }
                 } else if (FightActionUI.Focus != null)
                 {
                     var slot = FightActionUI.Focus.FirstEmptySlot;

@@ -12,6 +12,12 @@ public class FightActionUI : MonoBehaviour
     int coolDownAfterUse = 0;
 
     [SerializeField]
+    bool givesWalk;
+
+    [SerializeField]
+    bool givesAttack;
+
+    [SerializeField]
     Image backgroundImage;
 
     [SerializeField]
@@ -109,7 +115,7 @@ public class FightActionUI : MonoBehaviour
     ButtonAction SecondActionButton;
 
     [ContextMenu("Sync")]
-    public void Sync()
+    public void Sync(bool allowActions = true)
     {
         if (cooldown > 0)
         {
@@ -130,19 +136,24 @@ public class FightActionUI : MonoBehaviour
             backgroundImage.color = unavailableColor;
         } else
         {
-            actionButton1.interactable = AnySlotFilled;
+            actionButton1.interactable = Active == null && AnySlotFilled && allowActions; 
             actionButtonText1.enabled = false;
             actionButtonImg1.sprite = undoDiceSprite;
             actionButton1.gameObject.SetActive(true);
             FirstActionButton = actionButton1.interactable ? ButtonAction.Undo : ButtonAction.None;
 
-            actionButton2.interactable = AllSlotsFilled;
+            actionButton2.interactable = Active == null && AllSlotsFilled && allowActions;
             actionButtonText2.enabled = false;
             actionButtonImg2.sprite = activateSprite;
             actionButton2.gameObject.SetActive(true);
             SecondActionButton = actionButton2.interactable ? ButtonAction.Activate : ButtonAction.None;
 
             backgroundImage.color = availableColor;
+        }
+
+        if (Active == this)
+        {
+            backgroundImage.color = activeColor;
         }
     }
 
@@ -165,10 +176,45 @@ public class FightActionUI : MonoBehaviour
                     slot.ReturnDie();
                 }
                 break;
+            case ButtonAction.Activate:
+                Active = this;
+                Sync(false);
+
+                backgroundImage.color = activeColor;
+                cooldown = coolDownAfterUse;
+                if (givesWalk)
+                {
+                    PlayerController.instance.FightWalkDistance = Value;
+                }
+                // TODO: Disable all actions while active
+                // TODO: Listen for when we are done
+                break;
+        }
+    }
+
+    public void ConsumedWalk()
+    {
+        if (!givesAttack)
+        {
+            if (Active == this)
+            {
+                Active = null;
+                Sync();
+                ClearSlotsWithoutReturning();
+            }
+        }
+    }
+
+    void ClearSlotsWithoutReturning()
+    {
+        foreach (var slot in Slots)
+        {
+            slot.Clear();
         }
     }
 
     public static FightActionUI Focus { get; private set; }
+    public static FightActionUI Active { get; private set; }
 
     public void OnPointerEnter()
     {

@@ -35,8 +35,10 @@ public class FightActionDiceSlotUI : MonoBehaviour, IDragHandler, IBeginDragHand
         }
     }
 
-    public void TakeDie(Dice dragDie)
+    public bool TakeDie(Dice dragDie)
     {
+        if (!action.Available) return false;
+
         if (activeDie != null && activeDie != dragDie)
         {
             ReturnDie();
@@ -59,6 +61,7 @@ public class FightActionDiceSlotUI : MonoBehaviour, IDragHandler, IBeginDragHand
         }
 
         action.Sync();
+        return true;
     }
 
     public void Clear(bool clearActive = true)
@@ -114,15 +117,25 @@ public class FightActionDiceSlotUI : MonoBehaviour, IDragHandler, IBeginDragHand
         {
             if (FocusedSlot != null)
             {
-                FocusedSlot.TakeDie(activeDie);
-                Clear();
+                if (FocusedSlot.TakeDie(activeDie))
+                {
+                    Clear();
+                } else
+                {
+                    TakeDie(activeDie);
+                }
             } else if (FightActionUI.Focus != null)
             {
                 var slot = FightActionUI.Focus.FirstEmptySlot; 
                 if (slot != null)
                 {
-                    slot.TakeDie(activeDie);
-                    Clear();
+                    if (slot.TakeDie(activeDie))
+                    {
+                        Clear();
+                    } else
+                    {
+                        TakeDie(activeDie);
+                    }
                 } else
                 {
                     TakeDie(activeDie);

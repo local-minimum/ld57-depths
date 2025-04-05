@@ -690,10 +690,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coolDownAfterUse: 0
+  givesWalk: 0
+  givesAttack: 0
   backgroundImage: {fileID: 5138077170803638671}
   availableColor: {r: 1, g: 1, b: 1, a: 1}
   unavailableColor: {r: 0.5188679, g: 0.5188679, b: 0.5188679, a: 1}
-  activeColor: {r: 0, g: 0, b: 0, a: 0}
+  activeColor: {r: 0.10453011, g: 0.764151, b: 0.13343431, a: 1}
   diceSlots:
   - {fileID: 2285957713152027280}
   - {fileID: 6194916716125595527}
@@ -932,10 +934,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25.05
-  m_fontSizeBase: 36
+  m_fontSize: 22
+  m_fontSizeBase: 22
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 1
   m_fontSizeMax: 72
   m_fontStyle: 0

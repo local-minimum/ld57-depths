@@ -3722,6 +3722,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1977227978502055119, guid: 1ed112a2d9ee7b9499d74be06ce9ca21, type: 3}
+      propertyPath: m_text
+      value: Rush 'n Punch
+      objectReference: {fileID: 0}
+    - target: {fileID: 1977227978502055119, guid: 1ed112a2d9ee7b9499d74be06ce9ca21, type: 3}
+      propertyPath: m_fontSize
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 1977227978502055119, guid: 1ed112a2d9ee7b9499d74be06ce9ca21, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 1977227978502055119, guid: 1ed112a2d9ee7b9499d74be06ce9ca21, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2836922842461913448, guid: 1ed112a2d9ee7b9499d74be06ce9ca21, type: 3}
+      propertyPath: givesWalk
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2836922842461913448, guid: 1ed112a2d9ee7b9499d74be06ce9ca21, type: 3}
+      propertyPath: givesAttack
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3831704505341376671, guid: 1ed112a2d9ee7b9499d74be06ce9ca21, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -3752,7 +3776,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6604032984208400616, guid: 1ed112a2d9ee7b9499d74be06ce9ca21, type: 3}
       propertyPath: m_Name
-      value: 'Action: Walk'
+      value: 'Action: Rush and Punch'
       objectReference: {fileID: 0}
     - target: {fileID: 9182113350888519048, guid: 1ed112a2d9ee7b9499d74be06ce9ca21, type: 3}
       propertyPath: m_AnchorMax.y
