@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public delegate void PlayerEnterTileEvent(PlayerController instance);
+public delegate void PlayerEnterTileEvent(PlayerController player);
 
 public class PlayerController : Singleton<PlayerController, PlayerController>
 {
@@ -43,6 +43,20 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
 
     public bool InFight { get; set; } = false;
     public int FightWalkDistance { get; set; } = 0;
+
+    public enum PlayerPhase { Waiting, FreeWalk, Walk, Attack };
+    public PlayerPhase phase
+    {
+        get
+        {
+            if (walking) return PlayerPhase.Waiting;
+
+            if (!InFight) return PlayerPhase.FreeWalk;
+            if (FightWalkDistance > 0) return PlayerPhase.Walk;
+            // TODO: Fill out states
+            return PlayerPhase.Waiting;
+        }
+    }
 
     bool walking;
     int walkIndex;

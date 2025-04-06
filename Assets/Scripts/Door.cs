@@ -11,7 +11,9 @@ public class Door : MonoBehaviour
     Room leadsTo;
 
     [SerializeField]
-    Tile breachOrigin;
+    Tile leftTile;
+    [SerializeField]
+    Tile rightTile;
 
     [SerializeField]
     GameObject solidDoor;
@@ -37,6 +39,9 @@ public class Door : MonoBehaviour
     string notInFightHint = "Cannot breach doors while in a fight!";
     public bool LeadsToDanger => leadsTo.HasDanger;
 
+    bool PlayerOnBreachTile => PlayerController.instance.currentTile == leftTile ||
+        PlayerController.instance.currentTile == rightTile;
+
     private void Awake()
     {
         foreach (var fragment in doorFragments)
@@ -44,7 +49,7 @@ public class Door : MonoBehaviour
             fragment.gameObject.SetActive(false);
         }
 
-        if (PlayerController.instance.currentTile != breachOrigin)
+        if (!PlayerOnBreachTile)
         { 
             focusCollider.enabled = false;
         }
@@ -66,7 +71,7 @@ public class Door : MonoBehaviour
     {
         canBreach = false;
 
-        if (!breached && instance.currentTile == breachOrigin)
+        if (!breached && PlayerOnBreachTile)
         {
             if (instance.InFight)
             {
@@ -119,7 +124,7 @@ public class Door : MonoBehaviour
     [ContextMenu("Breach")]
     public void Breach()
     {
-        if (breached) return;
+        if (breached || !PlayerOnBreachTile) return;
 
         if (!string.IsNullOrEmpty(lastHint))
         {
@@ -127,10 +132,12 @@ public class Door : MonoBehaviour
             lastHint = null;
         }
 
-        leadsTo.AnimateIn(breachOrigin.coordinates);
+        var breachTile = PlayerController.instance.currentTile == leftTile ? leftTile : rightTile;
+
+        leadsTo.AnimateIn(breachTile.coordinates);
         solidDoor.SetActive(false);
 
-        var explosionSource = breachOrigin.transform.position + Vector3.up * explosionHeight;
+        var explosionSource = breachTile.transform.position + Vector3.up * explosionHeight;
 
         foreach (var fragment in doorFragments)
         {

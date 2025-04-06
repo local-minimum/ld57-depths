@@ -19,9 +19,32 @@ public class Room : MonoBehaviour
         }
     }
 
-    [SerializeField]
-    bool hasDanger;
-    public bool HasDanger => hasDanger;
+    List<Enemy> _enemies;
+    List<Enemy> enemies
+    {
+        get
+        {
+            if (_enemies == null)
+            {
+                _enemies = GetComponentsInChildren<Enemy>(true).ToList();
+            }
+            return _enemies;
+        }
+    }
+
+    public bool HasDanger => 
+        enemies.Any(e => e.Alive);
+
+    public void CheckStillDanger()
+    {
+        if (HasDanger) return;
+
+        // Remove fight state
+        PlayerController.instance.InFight = false;
+        DiceHand.instance.HideHand();
+        // TODO: Clean up actions
+        // TODO: XXX
+    }
 
     private void Start()
     {

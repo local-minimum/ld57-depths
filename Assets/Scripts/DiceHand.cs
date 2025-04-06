@@ -1,7 +1,8 @@
+using LMCore.AbstractClasses;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DiceHand : MonoBehaviour
+public class DiceHand : Singleton<DiceHand, DiceHand>
 {
     [SerializeField]
     Dice startDice;
@@ -57,6 +58,15 @@ public class DiceHand : MonoBehaviour
         rolling = true;
         nextRoll = Time.timeSinceLevelLoad;
         rollIdx = 0;
+    }
+
+    public void HideHand()
+    {
+        foreach (var die in dice)
+        {
+            die.gameObject.SetActive(false);
+        }
+        Dice.Focus = null;
     }
 
     bool rolling;

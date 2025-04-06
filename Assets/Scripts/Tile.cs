@@ -1,13 +1,25 @@
 using LMCore.Extensions;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
+using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class Tile : MonoBehaviour
 {
     private static Dictionary<Vector3Int, Tile> Tiles = new Dictionary<Vector3Int, Tile>();
+
+    [SerializeField]
+    Image hudImage;
+    [SerializeField]
+    TextMeshProUGUI hudText;
+
+    [SerializeField]
+    Color defaultColor;
+    [SerializeField]
+    Color goodColor;
+    [SerializeField]
+    Color badColor;
 
     public static Tile ClosestTile(Vector3 position)
     {
@@ -52,24 +64,118 @@ public class Tile : MonoBehaviour
         }
     }
 
+    void ClearHUD()
+    {
+        hudImage.enabled = false;
+        hudText.enabled = false;
+    }
+
+    public enum HUDState { Default, Good, Bad };
+
+    Color HudColor(HUDState state)
+    {
+        switch (state)
+        {
+            case HUDState.Good:
+                return goodColor;
+            case HUDState.Bad:
+                return badColor;
+            default:
+                return defaultColor;
+        }
+    }
+    public void ShowHUD(string message, HUDState state = HUDState.Default)
+    {
+        var color = HudColor(state);
+        hudText.text = message;
+        hudText.color = color;
+        hudText.enabled = true;
+
+        hudImage.color = color;
+        hudImage.enabled = true;
+    }
+
+    private void Start()
+    {
+        ClearHUD();
+    }
+
     private void OnEnable()
     {
+        name = $"Tile {coordinates}";
+        PlayerController.OnEnterTile += PlayerController_OnEnterTile;
+        Enemy.OnEnterTile += Enemy_OnEnterTile;
+
         Tiles.Add(coordinates, this);
     }
 
     private void OnDisable()
     {
+        PlayerController.OnEnterTile -= PlayerController_OnEnterTile;
+        Enemy.OnEnterTile -= Enemy_OnEnterTile;
+
         if (Tiles.TryGetValue(coordinates, out var tile) && tile == this) 
         {
             Tiles.Remove(coordinates);
+        }
+        ClearHUD();
+    }
+
+    Enemy occupyingEnemy;
+    PlayerController occupyingPlayer;
+
+    public bool Occupied => occupyingEnemy != null || occupyingPlayer != null;
+
+    private void PlayerController_OnEnterTile(PlayerController player)
+    {
+        occupyingPlayer = player.currentTile == this ? player : null;
+    }
+
+    private void Enemy_OnEnterTile(Enemy enemy)
+    {
+        if (enemy.currentTile == this)
+        {
+            occupyingEnemy = enemy;
+        } else if (enemy == occupyingEnemy)
+        {
+            occupyingEnemy = null;
         }
     }
 
     public static Tile focusTile { get; private set; }
 
+    List<Tile> highlightTiles;
+
     private void OnMouseEnter()
     {
         focusTile = this;
+        var playerPhase = PlayerController.instance.phase;
+
+        if (playerPhase == PlayerController.PlayerPhase.FreeWalk || playerPhase == PlayerController.PlayerPhase.Walk)
+        {
+            if (PlayerController.instance.currentTile.ClosestPathTo(focusTile, out var path))
+            {
+                bool restricted = playerPhase == PlayerController.PlayerPhase.Walk;
+                int maxDistance = PlayerController.instance.FightWalkDistance;
+
+                for (int i=0, l= path.Count; i<l;i++)
+                {
+                    var tile = path[i];
+                    if (i == 0)
+                    {
+                        tile.ShowHUD(null, HUDState.Good);
+                    } else if (!restricted || i <= maxDistance)
+                    {
+                        tile.ShowHUD(restricted ? i.ToString() : null, HUDState.Good);
+                    } else
+                    {
+                        tile.ShowHUD("X", HUDState.Bad);
+                    }
+                }
+
+                highlightTiles = path;
+            }
+        }
     }
 
     private void OnMouseExit()
@@ -77,6 +183,16 @@ public class Tile : MonoBehaviour
         if (focusTile == this)
         {
             focusTile = null;
+        }
+
+        if (highlightTiles != null)
+        {
+            for (int i = 0, l=highlightTiles.Count; i<l; i++)
+            {
+                highlightTiles[i].ClearHUD();
+            }
+
+            highlightTiles = null;
         }
     }
 
@@ -97,7 +213,11 @@ public class Tile : MonoBehaviour
         }
     }
 
-    public bool ClosestPathTo(Tile target, out List<Tile> path, int maxDepth = 20)
+    public bool ClosestPathTo(
+        Tile target, 
+        out List<Tile> path, 
+        int maxDepth = 20,
+        bool allowItermediateOccupation = false)
     {
         if (target == this)
         {
@@ -138,8 +258,16 @@ public class Tile : MonoBehaviour
                     return true;
                 } else if (depth < maxDepth - 1)
                 {
-                    seen.Enqueue(neighbour);
-                    depths[neighbour] = depth + 1;
+                    if (!neighbour.Occupied || allowItermediateOccupation)
+                    {
+                        seen.Enqueue(neighbour);
+                        depths[neighbour] = depth + 1;
+                    } else
+                    {
+                        // We have fully considered it even though we didn't really
+                        // visit so that's fine
+                        visited.Add(neighbour);
+                    }
                 }
             }
         }
