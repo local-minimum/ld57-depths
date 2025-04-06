@@ -79,7 +79,7 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
         if (InFight)
         {
             stepsText.text = $"Steps: {_FightWalkDistance}";
-            endMoveButton.gameObject.SetActive(_FightWalkDistance > 0);
+            endMoveButton.gameObject.SetActive(_FightWalkDistance > 0 && !walking);
         } else
         {
             stepsText.text = "Free walking";
@@ -110,7 +110,17 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
         }
     }
 
-    bool walking;
+    bool _walking;
+    bool walking
+    {
+        get => _walking;
+        set
+        {
+            _walking = value;
+            SyncHUD();
+        }
+    }
+
     int walkIndex;
     float walkStepStart;
     List<Tile> walkPath;

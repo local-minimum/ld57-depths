@@ -44,6 +44,7 @@ public class Room : MonoBehaviour
         DiceHand.instance.HideHand();
         // TODO: Clean up actions
         // TODO: XXX
+        Debug.Log($"Room {name} cleared");
     }
 
     private void Start()

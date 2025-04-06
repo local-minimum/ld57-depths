@@ -17,8 +17,14 @@ public class Enemy : MonoBehaviour
     public int HP { 
         get => _hp; 
         set {
+            var wasAlive = Alive;
             _hp = Mathf.Max(0, value);
-            hpUI.text = $"♥ {_hp}";
+            var alive = Alive;
+            hpUI.text = alive ? $"♥ {_hp}" : "Dead";
+            if (wasAlive && !alive)
+            {
+                Kill();
+            }
         }
     }
 
