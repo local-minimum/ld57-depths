@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using UnityEditor.Profiling;
 using UnityEngine;
 
 public class Level : MonoBehaviour
@@ -28,18 +29,16 @@ public class Level : MonoBehaviour
 
     int RemainingRooms => rooms.Count(r => !r.Revealed && !r.HasTile(origin));
 
-    bool walkingPlayer;
-    bool shouldWalkPlayer;
-    bool escapeLevel;
+    public enum EscapePhase { None, WaitingToStart, Walking, JumpingIntoBucket, RidingUp };
+    EscapePhase escapePhase = EscapePhase.None;
 
-    public bool ManagesPlayer => walkingPlayer || shouldWalkPlayer || escapeLevel;
+    public bool ManagesPlayer => escapePhase != EscapePhase.None;
 
     public void CheckCleared()
     {
         if (Cleared)
         {
-            shouldWalkPlayer = true;
-            escapeLevel = true;
+            escapePhase = EscapePhase.WaitingToStart;
             SyncHud();
         }
     }
@@ -51,14 +50,13 @@ public class Level : MonoBehaviour
         var start = PlayerController.instance.currentTile;
         if (start.ClosestPathTo(origin, out var path, maxDepth: 1000))
         {
-            walkingPlayer = true;
+            escapePhase = EscapePhase.Walking;
             PlayerController.instance.Walk(path);
         } else
         {
             Debug.LogError("Could not find path to bucket");
-            EscapeToSurface();
+            JumpIntoBucket();
         }
-        shouldWalkPlayer = false;
     }
 
     void SyncHud()
@@ -67,11 +65,12 @@ public class Level : MonoBehaviour
         roomsHUD.text = remaining > 0 ? $"Rooms: {remaining}" : "Level cleared";
     }
 
-    void EscapeToSurface()
+    void JumpIntoBucket()
     {
+        escapePhase = EscapePhase.JumpingIntoBucket;
         HintUI.instance.RemoveText(walkText);
         Debug.Log("Take the bucket up");
-        escapeLevel = false;
+        Bucket.instance.JumpIntoBucket(PlayerController.instance.transform);
     }
 
 
@@ -82,14 +81,21 @@ public class Level : MonoBehaviour
 
     private void Update()
     {
-        if (shouldWalkPlayer && !CoinFountain.instance.Playing)
+        if (escapePhase == EscapePhase.WaitingToStart && !CoinFountain.instance.Playing)
         {
             StartWalking();
-        }
-
-        if (walkingPlayer && escapeLevel && !PlayerController.instance.walking)
+        } else if (escapePhase == EscapePhase.Walking && !PlayerController.instance.walking)
         {
-            EscapeToSurface();
+            JumpIntoBucket();
+        } else if (escapePhase == EscapePhase.JumpingIntoBucket && !Bucket.instance.Jumping)
+        {
+            Bucket.instance.RideUp();
+            escapePhase = EscapePhase.RidingUp;
+        } else if (escapePhase == EscapePhase.RidingUp && !Bucket.instance.Riding)
+        {
+            // TODO: Overworld!
+            Debug.Log("Do overworld");
+            escapePhase = EscapePhase.None;
         }
     }
 }
