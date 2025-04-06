@@ -161,10 +161,12 @@ public class Tile : MonoBehaviour
                 for (int i=0, l= path.Count; i<l;i++)
                 {
                     var tile = path[i];
+                    bool illegalTile = Room.FightRoom != null && !Room.FightRoom.HasTile(tile);
+
                     if (i == 0)
                     {
                         tile.ShowHUD(null, HUDState.Good);
-                    } else if (!restricted || i <= maxDistance)
+                    } else if (!illegalTile && (!restricted || i <= maxDistance))
                     {
                         tile.ShowHUD(restricted ? i.ToString() : null, HUDState.Good);
                     } else
@@ -186,13 +188,20 @@ public class Tile : MonoBehaviour
                     {
                         var goodDistance = i >= attack.selectTileMinRange && i <= attack.selectTileMaxRange;
                         var tile = path[i];
+                        bool illegalTile = Room.FightRoom != null && !Room.FightRoom.HasTile(tile);
+
                         if (i < attack.selectTileMinRange)
                         {
                             tile.ShowHUD(null, HUDState.Good);
-                        } else if (tile == this)
+                        }
+                        else if (illegalTile) {
+                            tile.ShowHUD("X", HUDState.Bad);
+                        }
+                        else if (tile == this)
                         {
                             tile.ShowHUD(goodDistance ? "O" : "X", goodDistance ? HUDState.Good : HUDState.Bad);
-                        } else
+                        }
+                        else
                         {
                             tile.ShowHUD(goodDistance ? "." : "X", goodDistance ? HUDState.Good : HUDState.Bad);
                         }
@@ -243,7 +252,8 @@ public class Tile : MonoBehaviour
         Tile target, 
         out List<Tile> path, 
         int maxDepth = 20,
-        bool allowItermediateOccupation = false)
+        bool allowItermediateOccupation = false,
+        Room requireRoom = null)
     {
         if (target == this)
         {
@@ -269,8 +279,9 @@ public class Tile : MonoBehaviour
                 if (seen.Contains(neighbour) || visited.Contains(neighbour)) continue;
 
                 inversePath[neighbour] = current;
+                var passesRoomCheck = requireRoom == null || requireRoom.HasTile(neighbour);
 
-                if (neighbour == target)
+                if (neighbour == target && passesRoomCheck)
                 {
                     var inverse = new List<Tile>() { target };
                     current = target;
@@ -284,7 +295,7 @@ public class Tile : MonoBehaviour
                     return true;
                 } else if (depth < maxDepth - 1)
                 {
-                    if (!neighbour.Occupied || allowItermediateOccupation)
+                    if (passesRoomCheck && (!neighbour.Occupied || allowItermediateOccupation))
                     {
                         seen.Enqueue(neighbour);
                         depths[neighbour] = depth + 1;

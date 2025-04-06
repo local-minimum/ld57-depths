@@ -5,6 +5,8 @@ using LMCore.Extensions;
 
 public class Room : MonoBehaviour
 {
+    public static Room FightRoom;
+
     List<Tile> _tiles;
     List<Tile> tiles
     {
@@ -32,6 +34,8 @@ public class Room : MonoBehaviour
         }
     }
 
+    public bool HasTile(Tile tile) => tiles.Contains(tile);
+
     public bool HasDanger => 
         enemies.Any(e => e.Alive);
 
@@ -40,6 +44,11 @@ public class Room : MonoBehaviour
         if (HasDanger) return;
 
         // Remove fight state
+        if (FightRoom == this)
+        {
+            FightRoom = null;
+        }
+
         PlayerController.instance.InFight = false;
         DiceHand.instance.HideHand();
         // TODO: Clean up actions
@@ -76,6 +85,26 @@ public class Room : MonoBehaviour
         animating = true;
     }
 
+    private void OnEnable()
+    {
+        PlayerController.OnEnterTile += PlayerController_OnEnterTile;
+    }
+
+    private void OnDisable()
+    {
+        PlayerController.OnEnterTile -= PlayerController_OnEnterTile;
+    }
+
+    private void PlayerController_OnEnterTile(PlayerController player)
+    {
+        if (tiles.Contains(player.currentTile))
+        {
+            if (HasDanger)
+            {
+                FightRoom = this;
+            }
+        }
+    }
 
     private void Update()
     {

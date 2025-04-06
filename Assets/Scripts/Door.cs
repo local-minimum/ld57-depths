@@ -170,6 +170,11 @@ public class Door : MonoBehaviour
                 Time.timeScale = 1f;
                 exploding = false;
 
+                var roomTile = PlayerController.instance.currentTile == leftTile ? rightTile : leftTile;
+
+                PlayerController.instance
+                    .Walk(new List<Tile>() { PlayerController.instance.currentTile, roomTile });
+
                 OnBreach?.Invoke(this);
             }
         }

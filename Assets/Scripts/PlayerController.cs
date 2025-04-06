@@ -193,7 +193,11 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
                 var targetTile = Tile.focusTile;
                 if (targetTile != null)
                 {
-                    if (currentTile.ClosestPathTo(targetTile, out var path, AbsPlayerAttack.Focus.selectTileMaxRange))
+                    if (currentTile.ClosestPathTo(
+                        targetTile, 
+                        out var path, 
+                        AbsPlayerAttack.Focus.selectTileMaxRange,
+                        requireRoom: Room.FightRoom))
                     {
                         if (path.Count >= AbsPlayerAttack.Focus.selectTileMinRange && path.Count > 0)
                         {
@@ -225,7 +229,11 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
             var focusTile = Tile.focusTile;
             if (focusTile != null)
             {
-                if (currentTile.ClosestPathTo(focusTile, out var path, InFight ? FightWalkDistance : 100))
+                if (currentTile.ClosestPathTo(
+                    focusTile, 
+                    out var path, 
+                    InFight ? FightWalkDistance : 100,
+                    requireRoom: Room.FightRoom))
                 {
                     Walk(path);
                     if (InFight)
