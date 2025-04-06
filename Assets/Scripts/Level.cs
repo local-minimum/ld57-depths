@@ -93,9 +93,9 @@ public class Level : MonoBehaviour
             escapePhase = EscapePhase.RidingUp;
         } else if (escapePhase == EscapePhase.RidingUp && !Bucket.instance.Riding)
         {
-            // TODO: Overworld!
-            Debug.Log("Do overworld");
             escapePhase = EscapePhase.None;
+            Debug.Log($"Leaving level: {name}");
+            Overworld.instance.RideUp();
         }
     }
 }
