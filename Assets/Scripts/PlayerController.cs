@@ -18,6 +18,9 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
     [SerializeField]
     TextMeshProUGUI stepsText;
 
+    [SerializeField]
+    TextMeshProUGUI dieHealth;
+
     [SerializeField, Header("Walk Animation")]
     float walkSpeed = 0.7f;
 
@@ -30,7 +33,14 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
     [SerializeField]
     float verticalTranslationHeight;
 
-    public int HP { get; set; } = 6;
+    private int _hp = 6;
+    public int HP {
+        get => _hp;
+        set {
+            _hp = Mathf.Max(1, value);
+            SyncHUD();
+        } 
+    }
 
     Tile _currentTile;
     public Tile currentTile
@@ -69,7 +79,7 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
             _FightWalkDistance = Mathf.Max(0, value);
             SyncHUD();
 
-            if (_FightWalkDistance == 0 && FightActionUI.Active != null)
+            if (_FightWalkDistance == 0 && FightActionUI.Active != null && !walking)
             {
                 FightActionUI.Active.ConsumedWalk();
             }
@@ -87,6 +97,8 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
             stepsText.text = "Free walking";
             endMoveButton.gameObject.SetActive(false);
         }
+
+        dieHealth.text = $"Dice-health: <color=\"red\">{_hp}</color>";
     }
 
     public void EndMovement()
@@ -94,12 +106,13 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
         FightWalkDistance = 0;
     }
 
-    public enum PlayerPhase { Waiting, FreeWalk, Walk, SelectAttackTarget };
+    public enum PlayerPhase { Waiting, FreeWalk, Walk, SelectAttackTarget, SaveThrow };
     public PlayerPhase phase
     {
         get
         {
             if (walking) return PlayerPhase.Waiting;
+            if (saveThrowing) return PlayerPhase.SaveThrow;
             if (Room.FightRoom != null && Room.FightRoom.EnemyAttacks) return PlayerPhase.Waiting;
 
             if (!InFight) return PlayerPhase.FreeWalk;
@@ -112,14 +125,26 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
         }
     }
 
+    bool saveThrowing = false;
+
+    public void PerformSaveThrow()
+    {
+        saveThrowing = true;
+        DiceHand.instance.ShowDice();
+    }
+
     bool _walking;
-    bool walking
+    public bool walking
     {
         get => _walking;
-        set
+        private set
         {
             _walking = value;
             SyncHUD();
+            if (!value && _FightWalkDistance == 0 && FightActionUI.Active != null)
+            {
+                FightActionUI.Active.ConsumedWalk();
+            }
         }
     }
 

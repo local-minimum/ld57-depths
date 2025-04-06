@@ -53,6 +53,14 @@ public class Room : MonoBehaviour
         {
             if (!DiceHand.instance.HasRemainingDice)
             {
+                if (
+                    AbsPlayerAttack.Focus != null ||
+                    PlayerController.instance.walking)
+                {
+                    Debug.Log("Waiting for player");
+                    return;
+                }
+
                 Debug.Log("Enemy phase");
 
                 var pCoords = PlayerController.instance.currentTile.coordinates;
@@ -70,20 +78,24 @@ public class Room : MonoBehaviour
                     enemy.Attack.Completed = false;
                     if (first)
                     {
+                        activeAttacker = enemy;
                         enemy.Attack.Perform();
                         first = false;
+                        waitingForSaveThrow = false;
                     }
                 }
 
                 if (attackers.Count > 0)
                 {
                     enemyAttacks = true;
+                    MainCanvasController.instance.HideFightActions();
                     attackingEnemyIdx = 0;
                 } else
                 {
                     Debug.LogWarning("There were no enemies to attack back");
                     // This is odd and shouldn't happen
                     DiceHand.instance.RollHand();
+                    MainCanvasController.instance.ShowFightActions();
                 }
             }
             return;
@@ -102,8 +114,8 @@ public class Room : MonoBehaviour
 
         PlayerController.instance.InFight = false;
         DiceHand.instance.HideHand();
-        // TODO: Clean up actions
-        // TODO: XXX
+        MainCanvasController.instance.ClearAllDice();
+        MainCanvasController.instance.HideFightActions();
         Debug.Log($"Room {name} cleared");
     }
 
@@ -187,6 +199,10 @@ public class Room : MonoBehaviour
                 {
                     animating = false;
                     revealed = true;
+                    if (HasDanger)
+                    {
+                        MainCanvasController.instance.ShowFightActions();
+                    }
                 }
             } else
             {
@@ -200,12 +216,32 @@ public class Room : MonoBehaviour
         }
     }
 
+    Enemy activeAttacker;
+    bool waitingForSaveThrow;
+
     void HandleEnemyAttacks()
     {
-        var active = attackers[attackingEnemyIdx];
-        if (active.Attack.Completed)
+        if (waitingForSaveThrow)
         {
-            Debug.Log($"{active.name} completed its attack");
+            waitingForSaveThrow = PlayerController.instance.phase == PlayerController.PlayerPhase.SaveThrow;
+            if (waitingForSaveThrow)
+            {
+                return;
+            }
+        }
+
+        if (activeAttacker.Attack.Completed)
+        {
+            Debug.Log($"{activeAttacker.name} completed its attack");
+
+            if (activeAttacker.Attack.Attacked && !waitingForSaveThrow)
+            {
+                PlayerController.instance.PerformSaveThrow();
+                waitingForSaveThrow = true;
+                return;
+            }
+
+            waitingForSaveThrow = false;
             attackingEnemyIdx++;
 
             if (attackingEnemyIdx >= attackers.Count)
@@ -218,6 +254,7 @@ public class Room : MonoBehaviour
                 if (HasDanger)
                 {
                     DiceHand.instance.RollHand();
+                    MainCanvasController.instance.ShowFightActions();
                 } else
                 {
                     Debug.LogWarning("For some reason enemies died during their phase, ending danger");
@@ -226,8 +263,8 @@ public class Room : MonoBehaviour
                 }
             } else
             {
-                active = attackers[attackingEnemyIdx];
-                active.Attack.Perform();
+                activeAttacker = attackers[attackingEnemyIdx];
+                activeAttacker.Attack.Perform();
             }
         }
     }

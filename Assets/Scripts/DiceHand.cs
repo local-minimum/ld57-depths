@@ -51,6 +51,14 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
         }
     }
 
+    public void ShowDice()
+    {
+        foreach (var die in dice)
+        {
+            die.gameObject.SetActive(true);
+        }
+    }
+
     [ContextMenu("Roll Hand")]
     public void RollHand()
     {

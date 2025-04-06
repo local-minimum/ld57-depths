@@ -241,6 +241,12 @@ public class FightActionUI : MonoBehaviour
         }
     }
 
+    public void ClearDice()
+    {
+        ClearSlotsWithoutReturning();
+        Sync();
+    }
+
     void ClearSlotsWithoutReturning()
     {
         foreach (var slot in Slots)
