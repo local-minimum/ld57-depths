@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
 public delegate void EnemyEnterTileEvent(Enemy enemy);
@@ -18,7 +18,7 @@ public class Enemy : MonoBehaviour
         get => _hp; 
         set {
             _hp = Mathf.Max(0, value);
-            hpUI.text = _hp.ToString();
+            hpUI.text = $"♥ {_hp}";
         }
     }
 
@@ -62,6 +62,7 @@ public class Enemy : MonoBehaviour
         InitState();
     }
 
+    [ContextMenu("Sync")]
     void InitState()
     {
         // Get them read in if not already
