@@ -120,12 +120,12 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
         FightWalkDistance = 0;
     }
 
-    public enum PlayerPhase { Waiting, FreeWalk, Walk, SelectAttackTarget, SaveThrow };
+    public enum PlayerPhase { Waiting, FreeWalk, Walk, SelectAction, SelectAttackTarget, SaveThrow };
     public PlayerPhase phase
     {
         get
         {
-            if (walking) return PlayerPhase.Waiting;
+            if (walking || (currentTile != null && currentTile.level.ManagesPlayer)) return PlayerPhase.Waiting;
             if (saveThrowing) return PlayerPhase.SaveThrow;
             if (Room.FightRoom != null && Room.FightRoom.EnemyAttacks) return PlayerPhase.Waiting;
 
@@ -135,6 +135,7 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
             {
                 return PlayerPhase.SelectAttackTarget;
             }
+            if (InFight) return PlayerPhase.SelectAction;
             return PlayerPhase.Waiting;
         }
     }
@@ -296,6 +297,17 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
     Dice draggedDie;
     public void Interact(InputAction.CallbackContext context)
     {
+        if (phase == PlayerPhase.Waiting)
+        {
+            /*
+            Debug.Log($"Waiting can't let you do stuff: " +
+                $"Walking={walking} " +
+                $"LevelManages={currentTile != null && currentTile.level.ManagesPlayer} " +
+                $"EnemyAttacks={Room.FightRoom != null && Room.FightRoom.EnemyAttacks}");
+            */
+            return;
+        }
+
         if (context.performed)
         {
             if (AbsPlayerAttack.Focus != null && AbsPlayerAttack.Focus.Phase == AttackPhase.PlayerSelectTile)

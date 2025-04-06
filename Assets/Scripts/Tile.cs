@@ -7,6 +7,14 @@ using UnityEngine.UI;
 
 public class Tile : MonoBehaviour
 {
+    public Level level
+    {
+        get
+        {
+            return GetComponentInParent<Level>(true);
+        }
+    }
+
     private static Dictionary<Vector3Int, Tile> Tiles = new Dictionary<Vector3Int, Tile>();
 
     [SerializeField]

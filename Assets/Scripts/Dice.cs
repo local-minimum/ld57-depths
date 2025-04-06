@@ -12,31 +12,43 @@ public class Dice : MonoBehaviour
     int upValue = 1;
     [SerializeField]
     Transform upSentinel;
+    [SerializeField]
+    Vector3 upRotation;
 
     [SerializeField]
     int downValue = 6;
     [SerializeField]
     Transform downSentinel;
+    [SerializeField]
+    Vector3 downRotation;
 
     [SerializeField]
     int westValue = 2;
     [SerializeField]
     Transform westSentinel;
+    [SerializeField]
+    Vector3 westRotation;
 
     [SerializeField]
     int eastValue = 5;
     [SerializeField]
     Transform eastSentinel;
+    [SerializeField]
+    Vector3 eastRotation;
 
     [SerializeField]
     int northValue = 3;
     [SerializeField]
     Transform northSentinel;
+    [SerializeField]
+    Vector3 northRotation;
 
     [SerializeField]
     int southValue = 4;
     [SerializeField]
     Transform southSentinel;
+    [SerializeField]
+    Vector3 southRotation;
 
     [SerializeField, Header("Roll")]
     int bounces = 3;
@@ -115,6 +127,43 @@ public class Dice : MonoBehaviour
     Vector3 rollDirection;
     Vector3 rollUpDirection;
 
+    public void InstaRoll()
+    {
+        switch (Random.Range(1, 6))
+        {
+            case 1:
+                transform.localEulerAngles = northRotation;
+                _Value = northValue;
+                break;
+            case 2:
+                transform.localEulerAngles = southRotation;
+                _Value = southValue;
+                break;
+            case 3:
+                transform.localEulerAngles = upRotation;
+                _Value = upValue;
+                break;
+            case 4:
+                transform.localEulerAngles = downRotation;
+                _Value = downValue;
+                break;
+            case 5:
+                transform.localEulerAngles = westRotation;
+                _Value = westValue;
+                break;
+            case 6:
+                transform.localEulerAngles = eastRotation;
+                _Value = eastValue;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Rolls in localspace, except for the up 
+    /// </summary>
+    /// <param name="origin">World space origin</param>
+    /// <param name="direction">World space direction</param>
+    /// <param name="up">World up</param>
     public void Roll(Vector3 origin, Vector3 direction, Vector3 up)
     {
         if (rolling) return;
@@ -211,7 +260,7 @@ public class Dice : MonoBehaviour
 
         // Debug.Log(xOffset);
 
-        transform.position = rollOrigin + rollDirection * xOffset + rollUpDirection * yOffset;
+        transform.position = transform.parent.TransformPoint(rollOrigin + rollDirection * xOffset + rollUpDirection * yOffset);
 
         if (finalizeRoll) FinalizeRoll();
     }

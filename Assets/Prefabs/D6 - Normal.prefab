@@ -240,16 +240,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upValue: 3
   upSentinel: {fileID: 5574389535335365030}
+  upRotation: {x: 180, y: 90, z: 180}
   downValue: 4
   downSentinel: {fileID: 2596400393619789256}
+  downRotation: {x: 0, y: 90, z: 180}
   westValue: 2
   westSentinel: {fileID: 8251710085785397015}
+  westRotation: {x: 0, y: 0, z: -90}
   eastValue: 5
   eastSentinel: {fileID: 4188287875158492778}
+  eastRotation: {x: 0, y: 180, z: 90}
   northValue: 1
   northSentinel: {fileID: 6901548333575729824}
+  northRotation: {x: 270, y: 90, z: 180}
   southValue: 6
   southSentinel: {fileID: 8122607477018680754}
+  southRotation: {x: 90, y: -90, z: 180}
   bounces: 3
   arcScale: {x: 1.75, y: 0.75}
   arcSizeDecay: 0.5

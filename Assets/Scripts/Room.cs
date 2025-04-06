@@ -7,6 +7,22 @@ public class Room : MonoBehaviour
 {
     public static Room FightRoom;
 
+    Level _level;
+    Level level
+    {
+        get
+        {
+            if (_level == null)
+            {
+                _level = GetComponentInParent<Level>(true);
+            }
+            return _level;
+        }
+    }
+
+    [SerializeField]
+    Transform cameraViewPosition;
+
     [SerializeField]
     List<Door> doors = new List<Door>();
 
@@ -116,6 +132,8 @@ public class Room : MonoBehaviour
         DiceHand.instance.HideHand();
         MainCanvasController.instance.ClearAllDice();
         MainCanvasController.instance.HideFightActions();
+
+        level.CheckCleared();
         Debug.Log($"Room {name} cleared");
     }
 
@@ -143,6 +161,7 @@ public class Room : MonoBehaviour
 
     bool animating;
     bool revealed;
+    public bool Revealed => revealed;
     List<Tile> animateInOrder;
     float animStart;
 
@@ -165,6 +184,12 @@ public class Room : MonoBehaviour
         PlayerController.OnEnterTile -= PlayerController_OnEnterTile;
     }
 
+    bool playerInRoom;
+    bool easeCamera;
+    float cameraEaseStart;
+    Quaternion cameraStartRotation;
+    Vector3 cameraStartPosition;
+
     private void PlayerController_OnEnterTile(PlayerController player)
     {
         if (tiles.Contains(player.currentTile))
@@ -175,6 +200,19 @@ public class Room : MonoBehaviour
             {
                 FightRoom = this;
             }
+
+            if (!playerInRoom)
+            {
+                playerInRoom = true;
+                easeCamera = cameraViewPosition != null;
+                cameraEaseStart = Time.timeSinceLevelLoad;
+                cameraStartPosition = Camera.main.transform.position;
+                cameraStartRotation = Camera.main.transform.rotation;
+            }
+        } else
+        {
+            playerInRoom = false;
+            easeCamera = false;
         }
     }
 
@@ -272,9 +310,28 @@ public class Room : MonoBehaviour
         }
     }
 
+    [SerializeField, Header("Camera")]
+    AnimationCurve cameraEasing;
+
+    [SerializeField]
+    float cameraEaseDuration = 1f;
+
     private void Update()
     {
         if (animating) AnimateInRoom();
         if (enemyAttacks) HandleEnemyAttacks();
+
+        if (easeCamera)
+        {
+            var progress = Mathf.Clamp01((Time.timeSinceLevelLoad - cameraEaseStart) / cameraEaseDuration);
+
+            var cam = Camera.main.transform;
+
+            var t = cameraEasing.Evaluate(progress);
+            cam.position = Vector3.Lerp(cameraStartPosition, cameraViewPosition.position, t);
+            cam.rotation = Quaternion.Lerp(cameraStartRotation, cameraViewPosition.rotation, t);
+
+            easeCamera = progress < 1f;
+        }
     }
 }

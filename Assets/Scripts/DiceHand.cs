@@ -12,13 +12,13 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
     int startDiceCount = 6;
 
     [SerializeField]
-    Vector3 diceSpacing = new Vector3(-0.25f, 0f, 0f);
-
-    [SerializeField]
-    Vector3 saveThrowPosition = new Vector3(0f, 1f, 0f);
-
-    [SerializeField]
     float timeBetweenDice = 0.5f;
+
+    [SerializeField]
+    List<Transform> dicePositions = new List<Transform>();
+
+    [SerializeField]
+    Transform saveThrowPosition;
 
     List<Dice> dice = new List<Dice>();
 
@@ -78,9 +78,9 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
 
     public void SaveThrowRoll(Dice die)
     {
-        var start = transform.TransformPoint(saveThrowPosition);
-        die.transform.position = start;
-        die.Roll(start, transform.right, Vector3.up);
+        die.transform.SetParent(saveThrowPosition);
+        die.transform.localPosition = Vector3.zero;
+        die.InstaRoll();
     }
 
     public void RemoveDie(Dice die)
@@ -109,9 +109,9 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
         nextRoll = Time.timeSinceLevelLoad + timeBetweenDice;
         var die = dice[rollIdx];
         die.gameObject.SetActive(true);
-        var start = transform.TransformPoint(diceSpacing * rollIdx);
-        die.transform.position = start;
-        die.Roll(start, transform.right, Vector3.up);
+        die.transform.SetParent(dicePositions[rollIdx]);
+        die.transform.localPosition = Vector3.zero;
+        die.InstaRoll();
         rollIdx++;
 
         if (rollIdx >= dice.Count)

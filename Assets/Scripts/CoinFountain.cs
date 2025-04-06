@@ -28,7 +28,7 @@ public class CoinFountain : Singleton<CoinFountain, CoinFountain>
     float lateralForceMax = 10f;
 
     bool playing;
-    bool Playing => playing;
+    public bool Playing => playing;
 
     [ContextMenu("Test")]
     void Test()
