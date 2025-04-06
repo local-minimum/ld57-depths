@@ -1,5 +1,6 @@
 using LMCore.AbstractClasses;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -91,7 +92,7 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
         FightWalkDistance = 0;
     }
 
-    public enum PlayerPhase { Waiting, FreeWalk, Walk, Attack };
+    public enum PlayerPhase { Waiting, FreeWalk, Walk, SelectAttackTarget };
     public PlayerPhase phase
     {
         get
@@ -100,6 +101,10 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
 
             if (!InFight) return PlayerPhase.FreeWalk;
             if (FightWalkDistance > 0) return PlayerPhase.Walk;
+            if (AbsPlayerAttack.Focus != null && AbsPlayerAttack.Focus.Phase == AttackPhase.PlayerSelectTile)
+            {
+                return PlayerPhase.SelectAttackTarget;
+            }
             // TODO: Fill out states
             return PlayerPhase.Waiting;
         }
@@ -173,6 +178,22 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
     {
         if (context.performed)
         {
+            if (AbsPlayerAttack.Focus != null && AbsPlayerAttack.Focus.Phase == AttackPhase.PlayerSelectTile)
+            {
+                var targetTile = Tile.focusTile;
+                if (targetTile != null)
+                {
+                    if (currentTile.ClosestPathTo(targetTile, out var path, AbsPlayerAttack.Focus.selectTileMaxRange))
+                    {
+                        if (path.Count >= AbsPlayerAttack.Focus.selectTileMinRange && path.Count > 0)
+                        {
+                            AbsPlayerAttack.Focus.SetTarget(path.Last());
+                        }
+                    }
+                }
+                return;
+            }
+
             if (Dice.Focus != null)
             {
                 draggedDie = Dice.Focus;

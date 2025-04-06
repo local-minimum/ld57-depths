@@ -185,6 +185,12 @@ public class FightActionUI : MonoBehaviour
                 if (givesWalk)
                 {
                     PlayerController.instance.FightWalkDistance = Value;
+                } else if (givesAttack)
+                {
+                    if (!DoAttack())
+                    {
+                        EndActivation();
+                    }
                 }
                 // TODO: Disable all actions while active
                 // TODO: Listen for when we are done
@@ -192,16 +198,32 @@ public class FightActionUI : MonoBehaviour
         }
     }
 
+    bool DoAttack()
+    {
+        var attack = GetComponent<AbsPlayerAttack>();
+        if (attack != null)
+        {
+            attack.Initiate();
+            return true;
+        }
+        return false;
+    }
+
+    public void EndActivation()
+    {
+        if (Active == this)
+        {
+            Active = null;
+            Sync();
+            ClearSlotsWithoutReturning();
+        }
+    }
+
     public void ConsumedWalk()
     {
-        if (!givesAttack)
+        if (!givesAttack || !DoAttack())
         {
-            if (Active == this)
-            {
-                Active = null;
-                Sync();
-                ClearSlotsWithoutReturning();
-            }
+            EndActivation();
         }
     }
 

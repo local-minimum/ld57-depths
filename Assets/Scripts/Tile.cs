@@ -121,8 +121,8 @@ public class Tile : MonoBehaviour
         ClearHUD();
     }
 
-    Enemy occupyingEnemy;
-    PlayerController occupyingPlayer;
+    public Enemy occupyingEnemy { get; private set; }
+    public PlayerController occupyingPlayer { get; private set; }
 
     public bool Occupied => occupyingEnemy != null || occupyingPlayer != null;
 
@@ -174,6 +174,32 @@ public class Tile : MonoBehaviour
                 }
 
                 highlightTiles = path;
+            }
+        } else if (playerPhase == PlayerController.PlayerPhase.SelectAttackTarget)
+        {
+            var attack = AbsPlayerAttack.Focus;
+            if (attack != null)
+            {
+                if (PlayerController.instance.currentTile.ClosestPathTo(focusTile, out var path, maxDepth: 100))
+                {
+                    for (int i=0, l=path.Count; i<l; i++)
+                    {
+                        var goodDistance = i >= attack.selectTileMinRange && i <= attack.selectTileMaxRange;
+                        var tile = path[i];
+                        if (i < attack.selectTileMinRange)
+                        {
+                            tile.ShowHUD(null, HUDState.Good);
+                        } else if (tile == this)
+                        {
+                            tile.ShowHUD(goodDistance ? "O" : "X", goodDistance ? HUDState.Good : HUDState.Bad);
+                        } else
+                        {
+                            tile.ShowHUD(goodDistance ? "." : "X", goodDistance ? HUDState.Good : HUDState.Bad);
+                        }
+                    }
+
+                    highlightTiles = path;
+                }
             }
         }
     }
