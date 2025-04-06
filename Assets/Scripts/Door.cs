@@ -94,7 +94,7 @@ public class Door : MonoBehaviour
             }
         } else if (!string.IsNullOrEmpty(lastHint))
         {
-            HintUI.instance.HideText(lastHint);
+            HintUI.instance.RemoveText(lastHint);
             lastHint = null;
         }
 
@@ -131,7 +131,7 @@ public class Door : MonoBehaviour
 
         if (!string.IsNullOrEmpty(lastHint))
         {
-            HintUI.instance.HideText(lastHint);
+            HintUI.instance.RemoveText(lastHint);
             lastHint = null;
         }
 

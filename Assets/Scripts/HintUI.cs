@@ -17,7 +17,7 @@ public class HintUI : Singleton<HintUI, HintUI>
         Text.enabled = true;
     }
 
-    public void HideText(string text)
+    public void RemoveText(string text)
     {
         if (lastText == text)
         {

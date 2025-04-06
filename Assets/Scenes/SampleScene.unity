@@ -2528,6 +2528,7 @@ MonoBehaviour:
   startDice: {fileID: 3371263491653898962, guid: 76e778984607ef740b3321e6058528f6, type: 3}
   startDiceCount: 3
   diceSpacing: {x: -0.25, y: 0, z: 0}
+  saveThrowPosition: {x: -0.3, y: 0.25, z: 0}
   timeBetweenDice: 0.5
 --- !u!1001 &1128188385
 PrefabInstance:

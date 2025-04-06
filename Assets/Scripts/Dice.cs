@@ -106,6 +106,7 @@ public class Dice : MonoBehaviour
     public void Roll() => Roll(Vector3.zero, Vector3.right, Vector3.up);
 
     bool rolling;
+    public bool Rolling => rolling;
     Vector3 rollOrigin;
     List<float> checkpoints;
     float[] relativeParts;

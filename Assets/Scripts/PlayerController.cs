@@ -126,11 +126,16 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
     }
 
     bool saveThrowing = false;
+    bool saveThrowingWait = false;
+    Dice saveThrowDie;
+    string saveThrowMessage;
 
     public void PerformSaveThrow()
     {
         saveThrowing = true;
         DiceHand.instance.ShowDice();
+        saveThrowMessage = $"Select die to roll <color=\"red\">{HP}</color>{(HP > 1 ? " or less" : "")} lest it <color=\"red\">break</color>!";
+        HintUI.instance.SetText(saveThrowMessage);
     }
 
     bool _walking;
@@ -177,6 +182,41 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
     private void Update()
     {
         if (walking) EaseWalkStep();
+        if (saveThrowingWait) CheckSaveThrow();
+    }
+
+    void CheckSaveThrow()
+    {
+        if (saveThrowDie == null || saveThrowDie.Rolling) return;
+
+        StartCoroutine(DelayResolveSaveThrow(saveThrowDie));
+        saveThrowDie = null;
+    }
+
+    IEnumerator<WaitForSeconds> DelayResolveSaveThrow(Dice saveThrowDie)
+    {
+        var value = saveThrowDie.Value;
+        bool breaks = value > HP;
+        var msg = breaks ? "<color=\"red\">Die breaks!</color>" : "Die survives!";
+
+        HintUI.instance.SetText(msg);
+        yield return new WaitForSeconds(1f);
+        HintUI.instance.RemoveText(msg);
+
+        if (value > HP)
+        {
+            Debug.Log($"Oh no! Die breaks because {value} > {HP}");
+            DiceHand.instance.RemoveDie(saveThrowDie);
+            HP = 6;
+
+            // TODO: Animate die breakage
+            Destroy(saveThrowDie.gameObject);
+        }
+
+        this.saveThrowDie = null;
+        saveThrowing = false;
+        saveThrowingWait = false;
+        // Room should let next attack or change phase automatically
     }
 
     void LookAtNextTarget()
@@ -242,11 +282,23 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
 
             if (Dice.Focus != null)
             {
-                draggedDie = Dice.Focus;
-                DragDieUI.instance.SetFromDie(draggedDie);
-                draggedDie.gameObject.SetActive(false);
-                Cursor.visible = false;
-                Dice.Focus = null;  
+                if (phase == PlayerPhase.SaveThrow)
+                {
+                    if (!saveThrowingWait)
+                    {
+                        saveThrowDie = Dice.Focus;
+                        DiceHand.instance.SaveThrowRoll(Dice.Focus);
+                        saveThrowingWait = true;
+                        HintUI.instance.RemoveText(saveThrowMessage);
+                    }
+                } else
+                {
+                    draggedDie = Dice.Focus;
+                    DragDieUI.instance.SetFromDie(draggedDie);
+                    draggedDie.gameObject.SetActive(false);
+                    Cursor.visible = false;
+                    Dice.Focus = null;  
+                }
                 return;
             }
 

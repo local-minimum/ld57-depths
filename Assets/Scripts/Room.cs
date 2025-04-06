@@ -221,6 +221,7 @@ public class Room : MonoBehaviour
 
     void HandleEnemyAttacks()
     {
+        bool progressToNext = false;
         if (waitingForSaveThrow)
         {
             waitingForSaveThrow = PlayerController.instance.phase == PlayerController.PlayerPhase.SaveThrow;
@@ -228,13 +229,14 @@ public class Room : MonoBehaviour
             {
                 return;
             }
+            progressToNext = true;
         }
 
         if (activeAttacker.Attack.Completed)
         {
             Debug.Log($"{activeAttacker.name} completed its attack");
 
-            if (activeAttacker.Attack.Attacked && !waitingForSaveThrow)
+            if (activeAttacker.Attack.Attacked && !progressToNext)
             {
                 PlayerController.instance.PerformSaveThrow();
                 waitingForSaveThrow = true;
@@ -264,6 +266,7 @@ public class Room : MonoBehaviour
             } else
             {
                 activeAttacker = attackers[attackingEnemyIdx];
+                Debug.Log($"{activeAttacker} will start its attack");
                 activeAttacker.Attack.Perform();
             }
         }

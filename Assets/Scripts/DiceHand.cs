@@ -15,6 +15,9 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
     Vector3 diceSpacing = new Vector3(-0.25f, 0f, 0f);
 
     [SerializeField]
+    Vector3 saveThrowPosition = new Vector3(0f, 1f, 0f);
+
+    [SerializeField]
     float timeBetweenDice = 0.5f;
 
     List<Dice> dice = new List<Dice>();
@@ -66,9 +69,21 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
         {
             die.gameObject.SetActive(false);
         }
-        rolling = true;
+        rollingHand = true;
         nextRoll = Time.timeSinceLevelLoad;
         rollIdx = 0;
+    }
+
+    public void SaveThrowRoll(Dice die)
+    {
+        var start = transform.TransformPoint(saveThrowPosition);
+        die.transform.position = start;
+        die.Roll(start, transform.right, Vector3.up);
+    }
+
+    public void RemoveDie(Dice die)
+    {
+        dice.Remove(die);
     }
 
     public void HideHand()
@@ -80,13 +95,14 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
         Dice.Focus = null;
     }
 
-    bool rolling;
+    bool rollingHand;
     int rollIdx = 0;
     float nextRoll;
 
-    private void Update()
+
+    void RollHandUpdate()
     {
-        if (!rolling || Time.timeSinceLevelLoad < nextRoll) return;
+        if (!rollingHand || Time.timeSinceLevelLoad < nextRoll) return;
 
         nextRoll = Time.timeSinceLevelLoad + timeBetweenDice;
         var die = dice[rollIdx];
@@ -98,7 +114,12 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
 
         if (rollIdx >= dice.Count)
         {
-            rolling = false;
+            rollingHand = false;
         }
+    }
+
+    private void Update()
+    {
+        RollHandUpdate();
     }
 }
