@@ -68,7 +68,7 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
             return _currentTile;
         }
 
-        private set
+        set
         {
             _currentTile = value;
             OnEnterTile?.Invoke(this);
@@ -125,7 +125,7 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
     {
         get
         {
-            if (walking || (currentTile != null && currentTile.level.ManagesPlayer)) return PlayerPhase.Waiting;
+            if (walking || (currentTile != null && (currentTile.level == null || currentTile.level.ManagesPlayer))) return PlayerPhase.Waiting;
             if (saveThrowing) return PlayerPhase.SaveThrow;
             if (Room.FightRoom != null && Room.FightRoom.EnemyAttacks) return PlayerPhase.Waiting;
 

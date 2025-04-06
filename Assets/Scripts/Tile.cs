@@ -114,7 +114,10 @@ public class Tile : MonoBehaviour
         PlayerController.OnEnterTile += PlayerController_OnEnterTile;
         Enemy.OnEnterTile += Enemy_OnEnterTile;
 
-        Tiles.Add(coordinates, this);
+        if (level != null)
+        {
+            Tiles.Add(coordinates, this);
+        }
     }
 
     private void OnDisable()
