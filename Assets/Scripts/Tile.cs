@@ -153,7 +153,7 @@ public class Tile : MonoBehaviour
 
         if (playerPhase == PlayerController.PlayerPhase.FreeWalk || playerPhase == PlayerController.PlayerPhase.Walk)
         {
-            if (PlayerController.instance.currentTile.ClosestPathTo(focusTile, out var path))
+            if (PlayerController.instance.currentTile.ClosestPathTo(focusTile, out var path, maxDepth: 100))
             {
                 bool restricted = playerPhase == PlayerController.PlayerPhase.Walk;
                 int maxDistance = PlayerController.instance.FightWalkDistance;

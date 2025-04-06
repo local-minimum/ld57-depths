@@ -1,7 +1,9 @@
 using LMCore.AbstractClasses;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public delegate void PlayerEnterTileEvent(PlayerController player);
 
@@ -9,7 +11,13 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
 {
     public static event PlayerEnterTileEvent OnEnterTile;
 
+    [SerializeField, Header("HUD")]
+    Button endMoveButton;
+
     [SerializeField]
+    TextMeshProUGUI stepsText;
+
+    [SerializeField, Header("Walk Animation")]
     float walkSpeed = 0.7f;
 
     [SerializeField]
@@ -41,8 +49,47 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
         }
     }
 
-    public bool InFight { get; set; } = false;
-    public int FightWalkDistance { get; set; } = 0;
+    bool _inFight = false;
+    public bool InFight { 
+        get => _inFight;
+        set {
+            _inFight = value;
+            SyncHUD();
+        } 
+    }
+
+    int _FightWalkDistance;
+    public int FightWalkDistance { 
+        get => _FightWalkDistance;
+        set
+        {
+            _FightWalkDistance = Mathf.Max(0, value);
+            SyncHUD();
+
+            if (_FightWalkDistance == 0 && FightActionUI.Active != null)
+            {
+                FightActionUI.Active.ConsumedWalk();
+            }
+        }
+    }
+
+    void SyncHUD()
+    {
+        if (InFight)
+        {
+            stepsText.text = $"Steps: {_FightWalkDistance}";
+            endMoveButton.gameObject.SetActive(_FightWalkDistance > 0);
+        } else
+        {
+            stepsText.text = "Free walking";
+            endMoveButton.gameObject.SetActive(false);
+        }
+    }
+
+    public void EndMovement()
+    {
+        FightWalkDistance = 0;
+    }
 
     public enum PlayerPhase { Waiting, FreeWalk, Walk, Attack };
     public PlayerPhase phase
@@ -73,6 +120,11 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
         {
             LookAtNextTarget();
         }
+    }
+
+    private void Start()
+    {
+        SyncHUD();
     }
 
     private void Update()
@@ -147,11 +199,7 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
                     Walk(path);
                     if (InFight)
                     {
-                        FightWalkDistance -= Mathf.Max(0, path.Count - 1);
-                        if (FightWalkDistance == 0 && FightActionUI.Active != null)
-                        {
-                            FightActionUI.Active.ConsumedWalk();
-                        }
+                        FightWalkDistance -= path.Count - 1;
                     }
                 }
             }
