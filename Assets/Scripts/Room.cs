@@ -7,6 +7,9 @@ public class Room : MonoBehaviour
 {
     public static Room FightRoom;
 
+    [SerializeField]
+    List<Door> doors = new List<Door>();
+
     List<Tile> _tiles;
     List<Tile> tiles
     {
@@ -62,6 +65,10 @@ public class Room : MonoBehaviour
         {
             tile.gameObject.SetActive(false);
             tile.GetComponent<Collider>().enabled = false;
+        }
+        foreach (var door in doors)
+        {
+            door.HideIfNotSynced();
         }
     }
 
@@ -120,10 +127,16 @@ public class Room : MonoBehaviour
         {
             var tile = animateInOrder[i];
             var progress = Mathf.Clamp01((delta - i * tileDelta) / tileAnimDuration);
+            var tileDoors = doors.Where(d => d.NeighboursTile(tile));
+
             if (progress == 0) continue;
             if (progress == 1)
             {
                 tile.SyncPosition();
+                foreach (var door in tileDoors)
+                {
+                    door.SyncPosition();
+                }
                 if (i == l - 1)
                 {
                     animating = false;
@@ -131,7 +144,12 @@ public class Room : MonoBehaviour
                 }
             } else
             {
-                tile.SetPosition((1f - progress) * yAnimationOffset);
+                var offset = (1f - progress) * yAnimationOffset;
+                tile.SetPosition(offset);
+                foreach (var door in tileDoors)
+                {
+                    door.SetPosition(offset);
+                }
             }
 
         }

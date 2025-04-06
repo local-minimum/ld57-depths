@@ -610,6 +610,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1502aedb6c3805e44b69d29265913e2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  doors:
+  - {fileID: 1150885048}
   yAnimationOffset: 0.45
   tileDelta: 0.05
   tileAnimDuration: 0.2
@@ -663,6 +665,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1502aedb6c3805e44b69d29265913e2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  doors:
+  - {fileID: 1150885048}
   yAnimationOffset: 0.45
   tileDelta: 0.05
   tileAnimDuration: 0.2
@@ -2419,6 +2423,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2013187956957684524, guid: b100e1e62f0df8d419c2d2da5fd43de2, type: 3}
   m_PrefabInstance: {fileID: 9197745566621596247}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1150885048 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2577400999630387222, guid: b100e1e62f0df8d419c2d2da5fd43de2, type: 3}
+  m_PrefabInstance: {fileID: 9197745566621596247}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5dc7746224169de458ff9da67e395980, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1162236571
 PrefabInstance:
   m_ObjectHideFlags: 0

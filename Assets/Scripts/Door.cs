@@ -15,6 +15,9 @@ public class Door : MonoBehaviour
     [SerializeField]
     Tile rightTile;
 
+    public bool NeighboursTile(Tile tile) => 
+        tile == leftTile || tile == rightTile;
+
     [SerializeField]
     GameObject solidDoor;
 
@@ -177,6 +180,38 @@ public class Door : MonoBehaviour
 
                 OnBreach?.Invoke(this);
             }
+        }
+    }
+
+    Vector3 ReferencePosition => 
+        Vector3.Lerp(leftTile.transform.position, rightTile.transform.position, 0.5f);
+
+    bool positionSynced;
+
+    public void HideIfNotSynced()
+    {
+        if (positionSynced) return;
+        gameObject.SetActive(false);
+    }
+
+    public void SyncPosition()
+    {
+        transform.position = ReferencePosition;
+        if (!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+        }
+        positionSynced = true;
+    }
+
+    public void SetPosition(float yOffset)
+    {
+        if (positionSynced) return;
+
+        transform.position = ReferencePosition + Vector3.up * yOffset;
+        if (!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
         }
     }
 }

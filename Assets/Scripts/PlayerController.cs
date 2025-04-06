@@ -127,6 +127,11 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
 
     public void Walk(List<Tile> path)
     {
+        if (path.Last().occupyingEnemy != null)
+        {
+            path.RemoveAt(path.Count - 1);
+        }
+
         walkPath = path;
         walkIndex = 0;
         walkStepStart = Time.timeSinceLevelLoad;
