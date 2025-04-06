@@ -68,8 +68,9 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
         foreach (var die in dice)
         {
             die.gameObject.SetActive(false);
+            die.Used = false;
         }
-        rollingHand = true;
+        rollingHand = dice.Count > 0;
         nextRoll = Time.timeSinceLevelLoad;
         rollIdx = 0;
     }
