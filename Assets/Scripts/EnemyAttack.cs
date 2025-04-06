@@ -1,7 +1,6 @@
 using LMCore.Extensions;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyAttack : MonoBehaviour
@@ -25,16 +24,16 @@ public class EnemyAttack : MonoBehaviour
     float verticalTranslationHeight;
 
     [SerializeField, Header("Attack Animation")]
-    float animationDuration = 1f;
+    float attackAnimationDuration = 1f;
 
     [SerializeField]
-    AnimationCurve rotationOriginLookAhead;
+    AnimationCurve attackRotationOriginLookAhead;
 
     [SerializeField]
-    AnimationCurve rotationAngle;
+    AnimationCurve attackRotationAngle;
 
     [SerializeField, Range(0, 1)]
-    float invokeDamageProgress; 
+    float attackInvokeDamageProgress; 
 
     Enemy _enemy;
     Enemy enemy
@@ -56,24 +55,33 @@ public class EnemyAttack : MonoBehaviour
 
     public void Perform()
     {
+        Debug.Log($"{name} starts its attack");
+        Attacked = false;
         Completed = false;
         var myTile = enemy.currentTile;
         var target = PlayerController.instance.currentTile;
-        if (myTile.ClosestPathTo(myTile, out var path, requireRoom: enemy.room))
+        if (myTile.ClosestPathTo(target, out var path, requireRoom: enemy.room))
         {
             walkPath = path.SkipLast(1).Take(walkDistance + 1).ToList();
             walking = walkPath.Count > 1;
             walkIndex = 0;
             walkStepStart = Time.timeSinceLevelLoad;
+            if (!walking)
+            {
+                Debug.Log($"{name} is next to player it seems. Original path was {path.Count} long");
+            }
+            Debug.Log($"{name} will start walking on {walkPath.Count} length path (max steps: {walkDistance})");
         } else
         {
             walking = false;
+            Debug.LogWarning($"{name} found no path to player");
         }
 
         if (!walking) AttackPlayer();
     }
 
     public bool Completed { get; set; }
+    public bool Attacked { get; private set; }
 
     bool attacking;
     bool invokedDamage;
@@ -91,9 +99,11 @@ public class EnemyAttack : MonoBehaviour
 
         if (attacking)
         {
+            Debug.Log($"{name} will start its actual first attack");
             StartAttack();
         } else
         {
+            Debug.LogWarning($"{name} not next to player, can't attack");
             Completed = true;
         }
     }
@@ -143,24 +153,24 @@ public class EnemyAttack : MonoBehaviour
 
     void AnimateAttack()
     {
-        var progress = Mathf.Clamp01((Time.timeSinceLevelLoad - animationStart) / animationDuration);
+        var progress = Mathf.Clamp01((Time.timeSinceLevelLoad - animationStart) / attackAnimationDuration);
         var targetTile = PlayerController.instance.currentTile;
 
-        if (!invokedDamage && progress > invokeDamageProgress)
+        if (!invokedDamage && progress > attackInvokeDamageProgress)
         {
             PlayerController.instance.HP--;
             invokedDamage = true;
+            Attacked = true;
         }
-
 
         var eTileTransform = enemy.currentTile.transform;
 
         var referencePosition = Vector3.Lerp(
             eTileTransform.position,
             targetTile.transform.position,
-            rotationOriginLookAhead.Evaluate(progress));
+            attackRotationOriginLookAhead.Evaluate(progress));
 
-        var angle = Mathf.Deg2Rad * (180 - rotationAngle.Evaluate(progress));
+        var angle = Mathf.Deg2Rad * (180 - attackRotationAngle.Evaluate(progress));
         var up = Mathf.Sin(angle) * 0.5f;
         var lateral = Mathf.Cos(angle) * 0.5f;
         var eTransform = enemy.transform;
@@ -192,6 +202,7 @@ public class EnemyAttack : MonoBehaviour
     {
         // TODO: Resolve save die throw
         Debug.Log($"{name} has completed {attackIdx} attacks and player now has health {PlayerController.instance.HP}");
+        attacking = false;
         Completed = true;
     }
 

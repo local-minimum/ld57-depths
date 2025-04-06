@@ -100,6 +100,7 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
         get
         {
             if (walking) return PlayerPhase.Waiting;
+            if (Room.FightRoom != null && Room.FightRoom.EnemyAttacks) return PlayerPhase.Waiting;
 
             if (!InFight) return PlayerPhase.FreeWalk;
             if (FightWalkDistance > 0) return PlayerPhase.Walk;
@@ -107,7 +108,6 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
             {
                 return PlayerPhase.SelectAttackTarget;
             }
-            // TODO: Fill out states
             return PlayerPhase.Waiting;
         }
     }

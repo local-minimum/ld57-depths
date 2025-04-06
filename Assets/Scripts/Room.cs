@@ -44,6 +44,7 @@ public class Room : MonoBehaviour
 
     List<Enemy> attackers;
     bool enemyAttacks;
+    public bool EnemyAttacks => enemyAttacks;
     int attackingEnemyIdx = 0;
 
     public void CheckStillDanger()
@@ -52,11 +53,16 @@ public class Room : MonoBehaviour
         {
             if (!DiceHand.instance.HasRemainingDice)
             {
+                Debug.Log("Enemy phase");
+
                 var pCoords = PlayerController.instance.currentTile.coordinates;
                 attackers = enemies
                     .Where(e => e.Alive)
                     .OrderBy(e => e.currentTile.coordinates.ManhattanDistance(pCoords))
                     .ToList();
+
+
+                Debug.Log($"{attackers.Count} enemies wants to attack");
 
                 bool first = true;
                 foreach (var enemy in attackers)
@@ -75,6 +81,7 @@ public class Room : MonoBehaviour
                     attackingEnemyIdx = 0;
                 } else
                 {
+                    Debug.LogWarning("There were no enemies to attack back");
                     // This is odd and shouldn't happen
                     DiceHand.instance.RollHand();
                 }
@@ -198,6 +205,7 @@ public class Room : MonoBehaviour
         var active = attackers[attackingEnemyIdx];
         if (active.Attack.Completed)
         {
+            Debug.Log($"{active.name} completed its attack");
             attackingEnemyIdx++;
 
             if (attackingEnemyIdx >= attackers.Count)
@@ -205,14 +213,21 @@ public class Room : MonoBehaviour
                 attackers = null;
                 enemyAttacks = false;
 
+                Debug.Log("Enemies phase end");
+
                 if (HasDanger)
                 {
                     DiceHand.instance.RollHand();
                 } else
                 {
+                    Debug.LogWarning("For some reason enemies died during their phase, ending danger");
                     // Enemies shouldn't have died while attacking but lets be sure
                     EndRoomDanger();
                 }
+            } else
+            {
+                active = attackers[attackingEnemyIdx];
+                active.Attack.Perform();
             }
         }
     }

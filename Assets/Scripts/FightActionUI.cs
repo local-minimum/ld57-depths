@@ -196,7 +196,12 @@ public class FightActionUI : MonoBehaviour
                     {
                         EndActivation();
                     }
+                } else
+                {
+                    EndActivation();
+                    break;
                 }
+
                 // TODO: Disable all actions while active
                 break;
         }
@@ -220,6 +225,11 @@ public class FightActionUI : MonoBehaviour
             Active = null;
             Sync();
             ClearSlotsWithoutReturning();
+        }
+
+        if (Room.FightRoom != null)
+        {
+            Room.FightRoom.CheckStillDanger();
         }
     }
 
