@@ -75,11 +75,14 @@ public class Room : MonoBehaviour
     float tileAnimDuration = 0.4f;
 
     bool animating;
+    bool revealed;
     List<Tile> animateInOrder;
     float animStart;
 
     public void AnimateIn(Vector3Int origin)
     {
+        if (animating || revealed) return;
+
         animateInOrder = tiles.OrderBy(t => t.coordinates.ManhattanDistance(origin)).ToList();
         animStart = Time.timeSinceLevelLoad;
         animating = true;
@@ -99,6 +102,8 @@ public class Room : MonoBehaviour
     {
         if (tiles.Contains(player.currentTile))
         {
+            AnimateIn(player.currentTile.coordinates);
+
             if (HasDanger)
             {
                 FightRoom = this;
@@ -122,6 +127,7 @@ public class Room : MonoBehaviour
                 if (i == l - 1)
                 {
                     animating = false;
+                    revealed = true;
                 }
             } else
             {
