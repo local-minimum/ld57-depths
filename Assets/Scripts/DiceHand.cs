@@ -23,6 +23,7 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
     List<Dice> dice = new List<Dice>();
 
     public bool HasRemainingDice => dice.Any(d => !d.Used);
+    public bool Empty => dice.Count == 0;
 
     private void Start()
     {

@@ -211,6 +211,12 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
 
             // TODO: Animate die breakage
             Destroy(saveThrowDie.gameObject);
+
+            if (DiceHand.instance.Empty)
+            {
+                Debug.Log("Player has no more dice, player is dead.");
+                // TODO: Player death
+            }
         }
 
         this.saveThrowDie = null;
