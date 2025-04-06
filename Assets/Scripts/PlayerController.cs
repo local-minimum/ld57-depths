@@ -21,6 +21,9 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
     [SerializeField]
     TextMeshProUGUI dieHealth;
 
+    [SerializeField]
+    TextMeshProUGUI coinsText;
+
     [SerializeField, Header("Walk Animation")]
     float walkSpeed = 0.7f;
 
@@ -40,6 +43,16 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
             _hp = Mathf.Max(1, value);
             SyncHUD();
         } 
+    }
+
+    int _coins;
+    public int Coins { 
+        get => _coins; 
+        private set
+        {
+            _coins = value;
+            SyncHUD();
+        }
     }
 
     Tile _currentTile;
@@ -99,6 +112,7 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
         }
 
         dieHealth.text = $"Dice-health: <color=\"red\">{_hp}</color>";
+        coinsText.text = $"Coins: {(Coins == 0 ? "<color=\"red\">0</color>" : Coins.ToString())}";
     }
 
     public void EndMovement()
@@ -178,6 +192,24 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
     {
         SyncHUD();
     }
+
+
+    private void OnEnable()
+    {
+        CoinFountain.OnCoin += CoinFountain_OnCoin;
+    }
+
+    private void OnDisable()
+    {
+
+        CoinFountain.OnCoin -= CoinFountain_OnCoin;
+    }
+
+    private void CoinFountain_OnCoin()
+    {
+        Coins++;
+    }
+
 
     private void Update()
     {

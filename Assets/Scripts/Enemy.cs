@@ -11,6 +11,12 @@ public class Enemy : MonoBehaviour
     int startHP;
 
     [SerializeField]
+    int coinReward = 3;
+
+    [SerializeField]
+    float coinStartHeight = 1f;
+
+    [SerializeField]
     TextMeshProUGUI hpUI;
 
     private int _hp = -1;
@@ -97,8 +103,12 @@ public class Enemy : MonoBehaviour
 
     void Kill()
     {
-        // TODO: Add coins effect
+        // Alive is already false due to 0 hp
+
         // TODO: Add death
+        CoinFountain.instance.transform.position = transform.position + Vector3.up * coinStartHeight;
+        CoinFountain.instance.Emit(coinReward);
+
         room.CheckStillDanger();
     }
 }
