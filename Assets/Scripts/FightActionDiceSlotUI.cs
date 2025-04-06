@@ -35,6 +35,14 @@ public class FightActionDiceSlotUI : MonoBehaviour, IDragHandler, IBeginDragHand
         }
     }
 
+    public void SetDiceAsUsed()
+    {
+        if (activeDie != null)
+        {
+            activeDie.Used = true;
+        }
+    }
+
     public bool TakeDie(Dice dragDie)
     {
         if (!action.Available) return false;

@@ -30,6 +30,8 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
     [SerializeField]
     float verticalTranslationHeight;
 
+    public int HP { get; set; } = 6;
+
     Tile _currentTile;
     public Tile currentTile
     {

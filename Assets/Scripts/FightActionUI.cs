@@ -180,6 +180,11 @@ public class FightActionUI : MonoBehaviour
                 Active = this;
                 Sync(false);
 
+                foreach(var slot in diceSlots)
+                {
+                    slot.SetDiceAsUsed();
+                }
+
                 backgroundImage.color = activeColor;
                 cooldown = coolDownAfterUse;
                 if (givesWalk)
@@ -193,7 +198,6 @@ public class FightActionUI : MonoBehaviour
                     }
                 }
                 // TODO: Disable all actions while active
-                // TODO: Listen for when we are done
                 break;
         }
     }

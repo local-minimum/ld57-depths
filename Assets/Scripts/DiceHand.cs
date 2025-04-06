@@ -1,5 +1,6 @@
 using LMCore.AbstractClasses;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class DiceHand : Singleton<DiceHand, DiceHand>
@@ -17,6 +18,8 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
     float timeBetweenDice = 0.5f;
 
     List<Dice> dice = new List<Dice>();
+
+    public bool HasRemainingDice => dice.Any(d => !d.Used);
 
     private void Start()
     {
@@ -49,7 +52,7 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
     }
 
     [ContextMenu("Roll Hand")]
-    void RollHand()
+    public void RollHand()
     {
         foreach (var die in dice)
         {

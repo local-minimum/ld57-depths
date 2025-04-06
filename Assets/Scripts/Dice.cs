@@ -55,7 +55,6 @@ public class Dice : MonoBehaviour
 
     [SerializeField]
     Color dieColor;
-
     public Color DieColor => dieColor;
 
     [SerializeField]
@@ -97,6 +96,8 @@ public class Dice : MonoBehaviour
     {
         _Value = 0;
     }
+
+    public bool Used { get; set; }
 
     private int _Value;
     public int Value => _Value;

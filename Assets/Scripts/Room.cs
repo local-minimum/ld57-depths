@@ -42,10 +42,51 @@ public class Room : MonoBehaviour
     public bool HasDanger => 
         enemies.Any(e => e.Alive);
 
+    List<Enemy> attackers;
+    bool enemyAttacks;
+    int attackingEnemyIdx = 0;
+
     public void CheckStillDanger()
     {
-        if (HasDanger) return;
+        if (HasDanger)
+        {
+            if (!DiceHand.instance.HasRemainingDice)
+            {
+                var pCoords = PlayerController.instance.currentTile.coordinates;
+                attackers = enemies
+                    .Where(e => e.Alive)
+                    .OrderBy(e => e.currentTile.coordinates.ManhattanDistance(pCoords))
+                    .ToList();
 
+                bool first = true;
+                foreach (var enemy in attackers)
+                {
+                    enemy.Attack.Completed = false;
+                    if (first)
+                    {
+                        enemy.Attack.Perform();
+                        first = false;
+                    }
+                }
+
+                if (attackers.Count > 0)
+                {
+                    enemyAttacks = true;
+                    attackingEnemyIdx = 0;
+                } else
+                {
+                    // This is odd and shouldn't happen
+                    DiceHand.instance.RollHand();
+                }
+            }
+            return;
+        }
+
+        EndRoomDanger();
+    }
+
+    void EndRoomDanger()
+    {
         // Remove fight state
         if (FightRoom == this)
         {
@@ -118,10 +159,8 @@ public class Room : MonoBehaviour
         }
     }
 
-    private void Update()
+    void AnimateInRoom()
     {
-        if (!animating) return;
-
         var delta = Time.timeSinceLevelLoad - animStart;
         for (int i = 0, l = animateInOrder.Count; i<l; i++)
         {
@@ -151,7 +190,36 @@ public class Room : MonoBehaviour
                     door.SetPosition(offset);
                 }
             }
-
         }
+    }
+
+    void HandleEnemyAttacks()
+    {
+        var active = attackers[attackingEnemyIdx];
+        if (active.Attack.Completed)
+        {
+            attackingEnemyIdx++;
+
+            if (attackingEnemyIdx >= attackers.Count)
+            {
+                attackers = null;
+                enemyAttacks = false;
+
+                if (HasDanger)
+                {
+                    DiceHand.instance.RollHand();
+                } else
+                {
+                    // Enemies shouldn't have died while attacking but lets be sure
+                    EndRoomDanger();
+                }
+            }
+        }
+    }
+
+    private void Update()
+    {
+        if (animating) AnimateInRoom();
+        if (enemyAttacks) HandleEnemyAttacks();
     }
 }

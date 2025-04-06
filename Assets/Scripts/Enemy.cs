@@ -31,7 +31,7 @@ public class Enemy : MonoBehaviour
     public bool Alive => HP != 0;
 
     Room _room;
-    Room room
+    public Room room
     {
         get
         {
@@ -40,6 +40,19 @@ public class Enemy : MonoBehaviour
                 _room = GetComponentInParent<Room>(true);
             }
             return _room;
+        }
+    }
+
+    EnemyAttack _attack;
+    public EnemyAttack Attack
+    {
+        get
+        {
+            if (_attack == null)
+            {
+                _attack = GetComponentInChildren<EnemyAttack>(true);
+            }
+            return _attack;
         }
     }
 
@@ -56,7 +69,7 @@ public class Enemy : MonoBehaviour
             return _currentTile;
         }
 
-        private set
+        set
         {
             _currentTile = value;
             OnEnterTile?.Invoke(this);
