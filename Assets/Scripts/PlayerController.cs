@@ -7,10 +7,12 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public delegate void PlayerEnterTileEvent(PlayerController player);
+public delegate void CoinChangeEvent(int coins);
 
 public class PlayerController : Singleton<PlayerController, PlayerController>
 {
     public static event PlayerEnterTileEvent OnEnterTile;
+    public static event CoinChangeEvent OnCoinsChange;
 
     [SerializeField, Header("HUD")]
     Button endMoveButton;
@@ -48,9 +50,10 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
     int _coins;
     public int Coins { 
         get => _coins; 
-        private set
+        set
         {
-            _coins = value;
+            _coins = Mathf.Max(0, value);
+            OnCoinsChange?.Invoke(_coins);
             SyncHUD();
         }
     }

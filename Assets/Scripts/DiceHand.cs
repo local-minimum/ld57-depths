@@ -22,6 +22,8 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
 
     List<Dice> dice = new List<Dice>();
 
+    public bool Full => dicePositions.Count <= dice.Count;
+
     public bool HasRemainingDice => dice.Any(d => !d.Used);
     public bool Empty => dice.Count == 0;
 
@@ -88,6 +90,17 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
         dice.Remove(die);
     }
 
+    public bool AddDie(Dice die)
+    {
+        if (!Full)
+        {
+            dice.Add(die);
+            NewRollDie(die);
+            return true;
+        }
+        return false;
+    }
+
     public void HideHand()
     {
         foreach (var die in dice)
@@ -102,16 +115,23 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
     float nextRoll;
 
 
+    void NewRollDie(Dice die)
+    {
+        var idx = dice.IndexOf(die);
+        if (idx < 0) return;
+        die.gameObject.SetActive(true);
+        die.transform.SetParent(dicePositions[rollIdx]);
+        die.transform.localPosition = Vector3.zero;
+        die.InstaRoll();
+    }
+
     void RollHandUpdate()
     {
         if (!rollingHand || Time.timeSinceLevelLoad < nextRoll) return;
 
         nextRoll = Time.timeSinceLevelLoad + timeBetweenDice;
         var die = dice[rollIdx];
-        die.gameObject.SetActive(true);
-        die.transform.SetParent(dicePositions[rollIdx]);
-        die.transform.localPosition = Vector3.zero;
-        die.InstaRoll();
+        NewRollDie(die);
         rollIdx++;
 
         if (rollIdx >= dice.Count)

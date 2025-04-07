@@ -202,10 +202,8 @@ public class Dice : MonoBehaviour
         lastArc = -1;
     }
 
-    private void Update()
+    void OldRoll()
     {
-        if (!rolling) return;
-
         var t = Time.timeSinceLevelLoad;
         int arcIdx = checkpoints.FindIndex(c => c > t) - 1;
         float arcProgress = 0;
@@ -263,6 +261,71 @@ public class Dice : MonoBehaviour
         transform.position = transform.parent.TransformPoint(rollOrigin + rollDirection * xOffset + rollUpDirection * yOffset);
 
         if (finalizeRoll) FinalizeRoll();
+
+    }
+
+    int nextSpinTarget;
+    float spinStepDuration;
+    float spinStepStartTime;
+    Quaternion spinStepStartRotation;
+    Quaternion spinStepEndRotation;
+    bool spinning;
+
+    public void Spin(float speed = 0.3f, int startSide = -1)
+    {
+        spinStepDuration = speed;
+        nextSpinTarget = startSide < 0 ? Random.Range(0, 5) : Mathf.Min(5, startSide);
+        spinning = true;
+        SetNextSpinTarget();
+    }
+
+    public void EndSpin()
+    {
+        spinning = false;
+        transform.localRotation = GetRotation(nextSpinTarget);
+    }
+
+    Quaternion GetRotation(int side)
+    {
+        switch (side)
+        {
+            case 0:
+                return Quaternion.Euler(upRotation);
+            case 1:
+                return Quaternion.Euler(northRotation);
+            case 2:
+                return Quaternion.Euler(eastRotation);
+            case 3:
+                return Quaternion.Euler(downRotation);
+            case 4:
+                return Quaternion.Euler(westRotation);
+            default:
+                return Quaternion.Euler(southRotation);
+        }
+    }
+
+    void SetNextSpinTarget()
+    {
+        spinStepStartRotation = GetRotation(nextSpinTarget);
+        nextSpinTarget = (nextSpinTarget + 1) % 6;
+        spinStepEndRotation = GetRotation(nextSpinTarget);
+        spinStepStartTime = Time.timeSinceLevelLoad;
+        // Debug.Log($"Spinning from {spinStepStartRotation} to {spinStepEndRotation}");
+    }
+
+    private void Update()
+    {
+        if (rolling) OldRoll();
+
+        if (spinning)
+        {
+            var progress = Mathf.Clamp01((Time.timeSinceLevelLoad - spinStepStartTime) / spinStepDuration);
+            transform.rotation = Quaternion.Lerp(spinStepStartRotation, spinStepEndRotation, progress);
+            if (progress == 1)
+            {
+                SetNextSpinTarget();
+            }
+        }
     }
 
     void SetSpinn()

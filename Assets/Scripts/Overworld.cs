@@ -26,6 +26,11 @@ public class Overworld : Singleton<Overworld, Overworld>
     [SerializeField]
     List<Tile> pathToStore = new List<Tile>();
 
+    [SerializeField]
+    List<Level> levels = new List<Level>();
+
+    int currentLevel;
+
     public enum RidingPhase { None, RidingUp, JumpingOut, WalkingToStore, WalkingToWell };
     RidingPhase ridingPhase = RidingPhase.None;
 
@@ -85,6 +90,12 @@ public class Overworld : Singleton<Overworld, Overworld>
         cameraSliding = true;
     }
 
+    public void DiveDeeper()
+    {
+        currentLevel++;
+        StartWalkToWell();
+    }
+
     private void Update()
     {
         if (cameraSliding) UpdateCameraSlide();
@@ -99,10 +110,10 @@ public class Overworld : Singleton<Overworld, Overworld>
         } else if (ridingPhase == RidingPhase.JumpingOut && !Bucket.instance.Jumping) 
         {
             StartWalkToStore();
-        } else if (ridingPhase == RidingPhase.WalkingToStore && !PlayerController.instance.walking)
+        } else if (ridingPhase == RidingPhase.WalkingToStore && !PlayerController.instance.walking & !cameraSliding)
         {
             ridingPhase = RidingPhase.None;
-            Debug.Log("Do store!");
+            StoreUI.instance.ShowStore();
         }
         else if (ridingPhase == RidingPhase.WalkingToWell && !PlayerController.instance.walking)
         {
