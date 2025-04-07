@@ -11,6 +11,9 @@ public class Poem : Singleton<Poem, Poem>
     [SerializeField]
     TextMeshProUGUI textArea;
 
+    [SerializeField]
+    GameObject background;
+
     int showningPart = -1;
     public int Part => showningPart;
 
@@ -21,6 +24,7 @@ public class Poem : Singleton<Poem, Poem>
             showningPart = part;
             textArea.text = parts[part];
             textArea.gameObject.SetActive(true);
+            background.SetActive(true);
         } else
         {
             Debug.LogError($"{part} doesn't exist, only 0-{parts.Count - 1}");
@@ -33,6 +37,8 @@ public class Poem : Singleton<Poem, Poem>
         {
             textArea.gameObject.SetActive(false);
             showningPart = -1;
+
+            background.SetActive(false);
         }
     }
 

@@ -53,6 +53,12 @@ public class PlayerAreaAttack : AbsPlayerAttack
 
         Phase = AttackPhase.Animating;
         targets = tile.Neighbours.ToList();
+
+        if (tile != PlayerController.instance.currentTile)
+        {
+            targets.Add(tile);
+        }
+
         if (EightNeighbours)
         {
             foreach (var neighbour in targets.SelectMany(t => t.Neighbours).ToList())
@@ -81,6 +87,8 @@ public class PlayerAreaAttack : AbsPlayerAttack
         {
             cameraControl = null;
         }
+
+        Debug.Log($"{name} attacks {tile} with {targets.Count} targets");
 
         animating = true;
         yRotation = PlayerController.instance.transform.eulerAngles.y;

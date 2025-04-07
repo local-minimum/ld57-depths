@@ -32,11 +32,23 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     Transform avatar;
 
+    [SerializeField]
+    ParticleSystem particles;
+
+    [SerializeField]
+    int emitOnHit = 100;
+
     private int _hp = -1;
     public int HP { 
         get => _hp; 
         set {
             var wasAlive = Alive;
+
+            if (value < _hp && particles)
+            {
+                particles.Emit(emitOnHit);
+            }
+
             _hp = Mathf.Max(0, value);
             var alive = Alive;
             hpUI.text = alive ? $"♥ {_hp}" : "Dead";

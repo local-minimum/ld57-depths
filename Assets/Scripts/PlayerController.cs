@@ -348,7 +348,7 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
                         AbsPlayerAttack.Focus.selectTileMaxRange,
                         requireRoom: Room.FightRoom))
                     {
-                        if (path.Count >= AbsPlayerAttack.Focus.selectTileMinRange && path.Count > 0)
+                        if (path.Count - 1 >= AbsPlayerAttack.Focus.selectTileMinRange && path.Count > 0)
                         {
                             AbsPlayerAttack.Focus.SetTarget(path.Last());
                         }
