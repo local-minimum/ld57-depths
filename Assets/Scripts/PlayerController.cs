@@ -85,6 +85,11 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
         }
     }
 
+    public void ReenterSameTile()
+    {
+        OnEnterTile?.Invoke(this);
+    }
+
     bool _inFight = false;
     public bool InFight { 
         get => _inFight;

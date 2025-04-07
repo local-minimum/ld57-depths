@@ -38,6 +38,21 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     int emitOnHit = 100;
 
+    [SerializeField]
+    TextMeshProUGUI phraseUI;
+    float removePhraseTime;
+
+    [SerializeField, TextArea]
+    List<string> phrases = new List<string>();
+
+    public void EmitPhrase()
+    {
+        if (phrases.Count == 0) return;
+
+        phraseUI.text = phrases[Random.Range(0, phrases.Count)];
+        removePhraseTime = Time.timeSinceLevelLoad + 5f;
+    }
+
     private int _hp = -1;
     public int HP { 
         get => _hp; 
@@ -149,5 +164,16 @@ public class Enemy : MonoBehaviour
     {
         yield return new WaitForSeconds(2f);
         gameObject.SetActive(false);
+    }
+
+    private void Update()
+    {
+        if (Time.timeSinceLevelLoad > removePhraseTime)
+        {
+            if (phraseUI.text != null)
+            {
+                phraseUI.text = null;
+            }
+        }
     }
 }

@@ -7,7 +7,7 @@ public class LoopBackToMainMenu : MonoBehaviour
     public void Interact(InputAction.CallbackContext context)
     {
 
-        if (context.performed)
+        if (context.performed && Time.timeSinceLevelLoad > 1f)
         {
             SceneManager.LoadScene("TitleScene");
         }

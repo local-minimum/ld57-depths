@@ -65,7 +65,7 @@ public class PlayerAreaAttack : AbsPlayerAttack
             {
                 if (neighbour == tile) continue;
                 if (targets.Contains(neighbour)) continue;
-                if (tile.coordinates.ChebyshevDistance(neighbour.coordinates) == 1)
+                if (tile.coordinates.ChebyshevDistance(neighbour.coordinates) <= 1)
                 {
                     targets.Add(neighbour);
                 }
@@ -145,9 +145,11 @@ public class PlayerAreaAttack : AbsPlayerAttack
                     nextHit = Time.timeSinceLevelLoad + (hitIndex < targets.Count ? delayBetweenHits : finalDelay);
                     invokedDamage = false;
                 }
-            } else
+            } else if (!CoinFountain.instance.Playing)
             {
                 hitIndex++;
+                nextHit = Time.timeSinceLevelLoad + (hitIndex < targets.Count ? delayBetweenHits : finalDelay);
+                invokedDamage = false;
             }
         } else
         {

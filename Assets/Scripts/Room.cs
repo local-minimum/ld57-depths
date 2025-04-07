@@ -128,6 +128,9 @@ public class Room : MonoBehaviour
         MainCanvasController.instance.ClearAllDice();
         MainCanvasController.instance.HideFightActions();
 
+        // If we are next to a door we need to trigger breachability
+        PlayerController.instance.ReenterSameTile();
+
         level.CheckCleared();
         Debug.Log($"Room {name} cleared");
     }
@@ -257,6 +260,12 @@ public class Room : MonoBehaviour
                     if (HasDanger)
                     {
                         MainCanvasController.instance.ShowFightActions();
+                        var phraseOptions = enemies.Where(e => e.Alive).ToList();
+                        if (phraseOptions.Count > 0)
+                        {
+                            phraseOptions[Random.Range(0, phraseOptions.Count)].EmitPhrase();
+                        }
+                        
                     }
                 }
             } else

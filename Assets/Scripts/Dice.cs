@@ -129,7 +129,7 @@ public class Dice : MonoBehaviour
 
     public void InstaRoll()
     {
-        switch (Random.Range(1, 6))
+        switch (Random.Range(1, 7))
         {
             case 1:
                 transform.localEulerAngles = northRotation;
