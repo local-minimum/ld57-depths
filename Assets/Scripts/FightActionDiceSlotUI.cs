@@ -29,7 +29,7 @@ public class FightActionDiceSlotUI : MonoBehaviour, IDragHandler, IBeginDragHand
         {
             if (_action == null)
             {
-                _action = GetComponentInParent<FightActionUI>();
+                _action = GetComponentInParent<FightActionUI>(true);
             }
             return _action;
         }

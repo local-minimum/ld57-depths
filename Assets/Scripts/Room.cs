@@ -42,6 +42,8 @@ public class Room : MonoBehaviour
         }
     }
 
+    public bool HadDanger => enemies.Count > 0;
+
     public bool HasTile(Tile tile) => tiles.Contains(tile);
 
     public bool HasDanger => 
@@ -115,6 +117,10 @@ public class Room : MonoBehaviour
         if (FightRoom == this)
         {
             FightRoom = null;
+            if (HadDanger)
+            {
+                FightActionUI.TickDownCooldowns();
+            }
         }
 
         PlayerController.instance.InFight = false;

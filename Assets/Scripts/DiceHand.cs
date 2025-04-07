@@ -48,9 +48,9 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
         Door.OnBreach -= Door_OnBreach;
     }
 
-    private void Door_OnBreach(Door door)
+    private void Door_OnBreach(Door door, bool entersDanger)
     {
-        if (door.LeadsToDanger)
+        if (entersDanger)
         {
             RollHand();
             PlayerController.instance.InFight = true;
@@ -117,7 +117,7 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
     float nextRoll;
 
 
-    void RollDie(Dice die)
+    public void RollDie(Dice die)
     {
         var idx = dice.IndexOf(die);
         if (idx < 0) return;

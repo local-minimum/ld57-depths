@@ -1,14 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public delegate void DoorBreachEvent(Door door);
+public delegate void DoorBreachEvent(Door door, bool entersDangers);
 
 public class Door : MonoBehaviour
 {
     public static event DoorBreachEvent OnBreach;
-
-    [SerializeField]
-    Room leadsTo;
 
     [SerializeField]
     Tile leftTile;
@@ -40,7 +37,6 @@ public class Door : MonoBehaviour
     string breachHint = "Click <color=\"red\">door</color> to breach it!";
     [SerializeField]
     string notInFightHint = "Cannot breach doors while in a fight!";
-    public bool LeadsToDanger => leadsTo.HasDanger;
 
     bool PlayerOnBreachTile => PlayerController.instance.currentTile == leftTile ||
         PlayerController.instance.currentTile == rightTile;
@@ -70,13 +66,19 @@ public class Door : MonoBehaviour
 
     bool canBreach;
     string lastHint;
-    private void PlayerController_OnEnterTile(PlayerController instance)
+    private void PlayerController_OnEnterTile(PlayerController player)
     {
         canBreach = false;
 
         if (!breached && PlayerOnBreachTile)
         {
-            if (instance.InFight)
+            if (player.currentTile.level.escapePhase == Level.EscapePhase.Walking)
+            {
+                Breach();
+                return;
+            }
+
+            if (player.InFight)
             {
                 lastHint = notInFightHint;
             } else if (!breached)
@@ -85,6 +87,7 @@ public class Door : MonoBehaviour
                 canBreach = true;
             } else
             {
+                // Can't really happen
                 lastHint = null;
             }
 
@@ -136,8 +139,10 @@ public class Door : MonoBehaviour
         }
 
         var breachTile = PlayerController.instance.currentTile == leftTile ? leftTile : rightTile;
+        var targetTile = breachTile == leftTile ? rightTile : leftTile;
 
-        leadsTo.AnimateIn(breachTile.coordinates);
+        targetTile.room.AnimateIn(breachTile.coordinates);
+
         solidDoor.SetActive(false);
 
         var explosionSource = breachTile.transform.position + Vector3.up * explosionHeight;
@@ -175,10 +180,13 @@ public class Door : MonoBehaviour
 
                 var roomTile = PlayerController.instance.currentTile == leftTile ? rightTile : leftTile;
 
-                PlayerController.instance
-                    .Walk(new List<Tile>() { PlayerController.instance.currentTile, roomTile });
+                if (roomTile.level.escapePhase != Level.EscapePhase.Walking)
+                {
+                    PlayerController.instance
+                        .Walk(new List<Tile>() { PlayerController.instance.currentTile, roomTile });
+                }
 
-                OnBreach?.Invoke(this);
+                OnBreach?.Invoke(this, roomTile.room.HasDanger);
             }
         }
     }

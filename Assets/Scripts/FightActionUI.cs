@@ -19,6 +19,18 @@ public class FightActionUI : MonoBehaviour
         }
     }
 
+    public static void TickDownCooldowns()
+    {
+        foreach (var action in allActions)
+        {
+            if (action.cooldown > 0)
+            {
+                action.cooldown--;
+                action.Sync();
+            }
+        }
+    }
+
     [SerializeField, Header("General")]
     int coolDownAfterUse = 0;
 

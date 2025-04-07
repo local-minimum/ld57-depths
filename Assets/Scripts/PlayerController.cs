@@ -277,6 +277,9 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
                 Debug.Log("Player has no more dice, player is dead.");
                 SceneManager.LoadScene("DeathScene");
             }
+        } else
+        {
+            DiceHand.instance.RollDie(saveThrowDie);
         }
 
         this.saveThrowDie = null;

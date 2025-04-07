@@ -267,7 +267,7 @@ GameObject:
   - component: {fileID: 6707881033924470826}
   - component: {fileID: 3706500027292765267}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: Enemy - Rabbit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -303,8 +303,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b453a210a4446f64a836fb1cd7135340, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startHP: 20
-  coinReward: 3
+  startHP: 15
+  coinReward: 5
   coinStartHeight: 1
   hpUI: {fileID: 5756287875119787093}
   tex: {fileID: 2800000, guid: d334b0edb578aad4699acda9e1fe334e, type: 3}

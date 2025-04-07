@@ -15,6 +15,14 @@ public class Tile : MonoBehaviour
         }
     }
 
+    public Room room
+    {
+        get
+        {
+            return GetComponentInParent<Room>(true);
+        }
+    }
+
     private static Dictionary<Vector3Int, Tile> Tiles = new Dictionary<Vector3Int, Tile>();
 
     [SerializeField]

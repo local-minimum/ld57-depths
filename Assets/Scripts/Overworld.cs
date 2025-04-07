@@ -170,7 +170,7 @@ public class Overworld : Singleton<Overworld, Overworld>
 
         disableHudOnSpawn.SetActive(false);
 
-        PlayerController.instance.Coins = 20;
+        // PlayerController.instance.Coins = 20;
         Poem.instance.Show(0);
         overWorldPhase = OverWorldPhase.Intro;
     }
