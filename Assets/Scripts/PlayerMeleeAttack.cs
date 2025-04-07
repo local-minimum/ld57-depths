@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 public class PlayerMeleeAttack : AbsPlayerAttack
@@ -16,8 +17,20 @@ public class PlayerMeleeAttack : AbsPlayerAttack
 
     public override void Initiate()
     {
-        Phase = AttackPhase.PlayerSelectTile;
         Focus = this;
+        if (GameSettings.instance.AutoAttack && AttacksDirectNeighbor)
+        {
+            var tile = PlayerController.instance.currentTile;
+            var options = tile
+                .Neighbours
+                .Where(n => n.occupyingEnemy != null).ToList();
+            if (options.Count == 1)
+            {
+                SetTarget(options[0]);
+                return;
+            }
+        }
+        Phase = AttackPhase.PlayerSelectTile;
     }
 
     float animationStart;

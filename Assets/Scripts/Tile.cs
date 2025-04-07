@@ -242,8 +242,7 @@ public class Tile : MonoBehaviour
         }
     }
 
-
-    IEnumerable<Tile> Neighbours
+    public IEnumerable<Tile> Neighbours
     {
         get
         {

@@ -85,10 +85,10 @@ public class Overworld : Singleton<Overworld, Overworld>
     }
 
     [ContextMenu("Start Walk to Well from Store")]
-    void StartWalkToWell(bool setTile = true)
+    void StartWalkToWell(bool startFromStore = true)
     {
         overWorldPhase = OverWorldPhase.WalkingToWell;
-        if (setTile)
+        if (startFromStore)
         {
             PlayerController.instance.currentTile = pathToStore.Last();
         }
@@ -98,7 +98,7 @@ public class Overworld : Singleton<Overworld, Overworld>
         PlayerController.instance.Walk(pathToStore.Take(playerPosition + 1).Reverse<Tile>().ToList());
 
         cameraSlideStartTime = Time.timeSinceLevelLoad;
-        cameraSlideStart = cameraPositionStore;
+        cameraSlideStart = startFromStore ? cameraPositionStore : cameraPosition;
         cameraSlideEnd = cameraPosition;
         cameraSliding = true;
     }

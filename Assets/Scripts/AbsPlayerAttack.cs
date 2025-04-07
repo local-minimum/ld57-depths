@@ -11,6 +11,7 @@ public abstract class AbsPlayerAttack : MonoBehaviour
     public int selectTileMinRange = 1;
     public int selectTileMaxRange = 1;
 
+    public bool AttacksDirectNeighbor => selectTileMaxRange == 1 && selectTileMinRange == 1;
     public abstract void Initiate();
     public abstract void SetTarget(Tile tile);
 

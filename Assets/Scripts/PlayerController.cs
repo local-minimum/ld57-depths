@@ -375,7 +375,13 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
                     Walk(path);
                     if (InFight)
                     {
-                        FightWalkDistance -= path.Count - 1;
+                        if (GameSettings.instance.EndWalksEarly)
+                        {
+                            FightWalkDistance = 0;
+                        } else
+                        {
+                            FightWalkDistance -= path.Count - 1;
+                        }
                     }
                 }
             }
