@@ -222,4 +222,11 @@ public class Door : MonoBehaviour
             gameObject.SetActive(true);
         }
     }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawLine(transform.position + Vector3.up * 1.5f, leftTile.transform.position);
+        Gizmos.DrawLine(transform.position + Vector3.up * 1.5f, rightTile.transform.position);
+    }
 }

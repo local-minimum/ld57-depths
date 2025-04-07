@@ -351,4 +351,15 @@ public class Room : MonoBehaviour
             easeCamera = progress < 1f;
         }
     }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.magenta;
+        foreach (var door in doors)
+        {
+            if (door == null) continue;
+            Gizmos.DrawWireCube(door.transform.position + Vector3.up * 1.5f, Vector3.one);
+        }
+
+    }
 }
