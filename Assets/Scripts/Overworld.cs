@@ -2,11 +2,18 @@ using LMCore.AbstractClasses;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Overworld : Singleton<Overworld, Overworld> 
 {
     [SerializeField]
     Transform bucketRestingPosition;
+
+    [SerializeField]
+    Tile spawnTile;
+
+    [SerializeField]
+    GameObject disableHudOnSpawn;
 
     public Vector3 BucketRestingPosition => 
         bucketRestingPosition.position;
@@ -31,7 +38,7 @@ public class Overworld : Singleton<Overworld, Overworld>
 
     int currentLevel;
 
-    public enum OverWorldPhase { None, RidingUp, JumpingOut, WalkingToStore, WalkingToWell, JumpIn, RideDown };
+    public enum OverWorldPhase { None, Intro, IntroFirstDive, RidingUp, JumpingOut, WalkingToStore, WalkingToWell, JumpIn, RideDown };
     OverWorldPhase overWorldPhase = OverWorldPhase.None;
 
     public void RideUp()
@@ -82,7 +89,10 @@ public class Overworld : Singleton<Overworld, Overworld>
     {
         overWorldPhase = OverWorldPhase.WalkingToWell;
         PlayerController.instance.currentTile = pathToStore.Last();
-        PlayerController.instance.Walk(pathToStore.Reverse<Tile>().ToList());
+        var playerPosition = pathToStore.IndexOf(PlayerController.instance.currentTile);
+
+        Debug.Log($"Player is on step {playerPosition}");
+        PlayerController.instance.Walk(pathToStore.Take(playerPosition + 1).Reverse<Tile>().ToList());
 
         cameraSlideStartTime = Time.timeSinceLevelLoad;
         cameraSlideStart = cameraPositionStore;
@@ -124,5 +134,41 @@ public class Overworld : Singleton<Overworld, Overworld>
             Bucket.instance.RideToLevel(levels[currentLevel]);
             overWorldPhase = OverWorldPhase.None;
         }
+    }
+
+    [SerializeField]
+    int initialStories = 2;
+
+    public void Interact(InputAction.CallbackContext context)
+    {
+        if (context.performed && overWorldPhase == OverWorldPhase.Intro)
+        {
+            if (Poem.instance.Part < initialStories - 1)
+            {
+                Poem.instance.Show(Poem.instance.Part + 1);
+            } else
+            {
+                Poem.instance.Hide(initialStories - 1);
+                StartWalkToWell();
+            }
+        }
+    }
+
+    private void OnEnable()
+    {
+        PlayerController.instance.currentTile = spawnTile;
+        PlayerController.instance.transform.position = spawnTile.transform.position;
+
+        Bucket.instance.SetOverworldPosition();
+
+        var cTran = Camera.main.transform;
+        cTran.position = cameraPosition.position;
+        cTran.rotation = cameraPosition.rotation;
+
+        disableHudOnSpawn.SetActive(false);
+
+        PlayerController.instance.Coins = 20;
+        Poem.instance.Show(0);
+        overWorldPhase = OverWorldPhase.Intro;
     }
 }

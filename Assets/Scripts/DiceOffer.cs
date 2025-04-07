@@ -63,8 +63,10 @@ public class DiceOffer : MonoBehaviour
             if (!DiceHand.instance.AddDie(die))
             {
                 Debug.LogError("We couldn't add bought die to hand");
-                PlayerController.instance.Coins -= cost;
                 Destroy(die.gameObject);
+            } else
+            {
+                PlayerController.instance.Coins -= cost;
             }
         }
     }

@@ -20,6 +20,11 @@ public class StoreUI : Singleton<StoreUI, StoreUI>
             offer.SetActive(true);
         }
 
+        foreach (var stat in hideStats)
+        {
+            stat.SetActive(false);
+        }
+
         leaveButton.SetActive(true);
 
         DiceHand.instance.RollHand();
@@ -28,14 +33,14 @@ public class StoreUI : Singleton<StoreUI, StoreUI>
 
     void HideStore()
     {
-        foreach (var stat in hideStats)
-        {
-            stat.SetActive(false);
-        }
-
         foreach (var offer in offers)
         {
             offer.SetActive(false);
+        }
+
+        foreach (var stat in hideStats)
+        {
+            stat.SetActive(false);
         }
 
         leaveButton.SetActive(false);

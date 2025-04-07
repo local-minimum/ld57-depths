@@ -261,8 +261,8 @@ MonoBehaviour:
   arcSizeDecay: 0.5
   rollDuration: 1.5
   spinFactor: 1000
-  dieColor: {r: 0.7924528, g: 0.03364185, b: 0.05170871, a: 1}
-  dieTextColor: {r: 0.9433962, g: 0.5829477, b: 0.5829477, a: 1}
+  dieColor: {r: 0.16862746, g: 0.20392159, b: 0.7725491, a: 1}
+  dieTextColor: {r: 0.8062033, g: 0.81366974, b: 0.9339623, a: 1}
 --- !u!65 &8014997677891061389
 BoxCollider:
   m_ObjectHideFlags: 0

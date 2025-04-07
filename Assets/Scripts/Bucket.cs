@@ -152,6 +152,16 @@ public class Bucket : Singleton<Bucket, Bucket>
         ridingDown = false;
     }
 
+    public void SetOverworldPosition()
+    {
+        var offset = bucketRoot.position - transform.position;
+
+        bucketRoot.position = 
+            Overworld.instance.BucketRestingPosition + 
+            offset + 
+            Vector3.up * rideUpOverworldEasing.Evaluate(1f);
+    }
+
     private void Update()
     {
         if (jumpingIn)
