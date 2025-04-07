@@ -33,7 +33,7 @@ public class EnemyAttack : MonoBehaviour
     AnimationCurve attackRotationAngle;
 
     [SerializeField, Range(0, 1)]
-    float attackInvokeDamageProgress; 
+    float attackInvokeDamageProgress;
 
     Enemy _enemy;
     Enemy enemy
@@ -200,7 +200,6 @@ public class EnemyAttack : MonoBehaviour
 
     void AfterAttacks()
     {
-        // TODO: Resolve save die throw
         Debug.Log($"{name} has completed {attackIdx} attacks and player now has health {PlayerController.instance.HP}");
         attacking = false;
         Completed = true;

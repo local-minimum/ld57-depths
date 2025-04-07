@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public delegate void PlayerEnterTileEvent(PlayerController player);
@@ -251,6 +252,7 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
             if (DiceHand.instance.Empty)
             {
                 Debug.Log("Player has no more dice, player is dead.");
+                SceneManager.LoadScene("DeathScene");
                 // TODO: Player death
             }
         }
