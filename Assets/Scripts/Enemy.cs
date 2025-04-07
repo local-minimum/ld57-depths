@@ -118,6 +118,7 @@ public class Enemy : MonoBehaviour
     void Kill()
     {
         // Alive is already false due to 0 hp
+        currentTile.RemoveDeadEnemy(this);
 
         billboard.material.SetTexture("_BaseMap", texDead);
         GetComponent<LookAtCamera>().enabled = false;

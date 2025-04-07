@@ -227,6 +227,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hudImage: {fileID: 8016119352157190684}
   hudText: {fileID: 6440873781587649456}
+  hudRoot: {fileID: 232993702988470449}
+  col: {fileID: 5940469569018281994}
   defaultColor: {r: 0.8396226, g: 0.8396226, b: 0.8396226, a: 0.5019608}
   goodColor: {r: 0.11052701, g: 0.754717, b: 0.0747597, a: 0.5019608}
   badColor: {r: 0.41509432, g: 0.017621921, b: 0.017621921, a: 0.8}

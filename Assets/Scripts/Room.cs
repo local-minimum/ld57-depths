@@ -26,30 +26,19 @@ public class Room : MonoBehaviour
     [SerializeField]
     List<Door> doors = new List<Door>();
 
-    List<Tile> _tiles;
     List<Tile> tiles
     {
         get
         {
-            if (_tiles == null)
-            {
-                _tiles = GetComponentsInChildren<Tile>(true).ToList();
-            }
-
-            return _tiles;
+            return GetComponentsInChildren<Tile>(true).ToList();
         }
     }
 
-    List<Enemy> _enemies;
     List<Enemy> enemies
     {
         get
         {
-            if (_enemies == null)
-            {
-                _enemies = GetComponentsInChildren<Enemy>(true).ToList();
-            }
-            return _enemies;
+            return GetComponentsInChildren<Enemy>(true).ToList();
         }
     }
 
@@ -139,6 +128,12 @@ public class Room : MonoBehaviour
 
     private void Start()
     {
+        HideRoom();
+    }
+
+    [ContextMenu("Hide Room")]
+    public void HideRoom()
+    {
         foreach (var tile in tiles)
         {
             tile.gameObject.SetActive(false);
@@ -147,6 +142,20 @@ public class Room : MonoBehaviour
         foreach (var door in doors)
         {
             door.HideIfNotSynced();
+        }
+    }
+
+    [ContextMenu("Show Room")]
+    void ShowRoom()
+    {
+        foreach (var tile in tiles)
+        {
+            tile.gameObject.SetActive(true);
+            tile.GetComponent<Collider>().enabled = true;
+        }
+        foreach (var door in doors)
+        {
+            door.gameObject.SetActive(true);
         }
     }
 
@@ -168,6 +177,8 @@ public class Room : MonoBehaviour
     public void AnimateIn(Vector3Int origin)
     {
         if (animating || revealed) return;
+
+        Debug.Log($"Revealing {name} from {origin}");
 
         animateInOrder = tiles.OrderBy(t => t.coordinates.ManhattanDistance(origin)).ToList();
         animStart = Time.timeSinceLevelLoad;

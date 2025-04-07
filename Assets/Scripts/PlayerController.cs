@@ -67,7 +67,6 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
             if (_currentTile == null)
             {
                 _currentTile = Tile.ClosestTile(transform.position);
-                OnEnterTile?.Invoke(this);
             }
             return _currentTile;
         }
@@ -253,7 +252,6 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
             {
                 Debug.Log("Player has no more dice, player is dead.");
                 SceneManager.LoadScene("DeathScene");
-                // TODO: Player death
             }
         }
 

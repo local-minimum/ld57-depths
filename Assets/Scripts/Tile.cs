@@ -23,6 +23,12 @@ public class Tile : MonoBehaviour
     TextMeshProUGUI hudText;
 
     [SerializeField]
+    GameObject hudRoot;
+
+    [SerializeField]
+    Collider col;
+
+    [SerializeField]
     Color defaultColor;
     [SerializeField]
     Color goodColor;
@@ -133,9 +139,28 @@ public class Tile : MonoBehaviour
     }
 
     public Enemy occupyingEnemy { get; private set; }
+    public void RemoveDeadEnemy(Enemy enemy)
+    {
+        if (enemy == occupyingEnemy && !enemy.Alive)
+        {
+            occupyingEnemy = null;
+        }
+    }
+
     public PlayerController occupyingPlayer { get; private set; }
 
-    public bool Occupied => occupyingEnemy != null || occupyingPlayer != null;
+    bool _nonInteractable;
+    public bool NonInteractable {
+        get => _nonInteractable;
+        set
+        {
+            _nonInteractable = value;
+            col.enabled = !value;
+            hudRoot.SetActive(!value);
+        } 
+    }
+
+    public bool Occupied => occupyingEnemy != null || occupyingPlayer != null || NonInteractable;
 
     private void PlayerController_OnEnterTile(PlayerController player)
     {

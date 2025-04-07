@@ -14,20 +14,18 @@ public class Level : MonoBehaviour
     [SerializeField]
     List<GameObject> infoHuds = new List<GameObject>();
 
+    [SerializeField]
+    bool returnsPlayerToSurface = true;
+
     public Vector3 BucketPosition =>
         origin.transform.position + Vector3.left * 2f + Vector3.up * 0.25f;
        
 
-    List<Room> _rooms;
     List<Room> rooms
     {
         get
         {
-            if (_rooms == null)
-            {
-                _rooms = GetComponentsInChildren<Room>(true).ToList();
-            }
-            return _rooms;
+            return GetComponentsInChildren<Room>(true).ToList();
         }
     }
 
@@ -44,7 +42,10 @@ public class Level : MonoBehaviour
     {
         if (Cleared)
         {
-            escapePhase = EscapePhase.WaitingToStart;
+            if (returnsPlayerToSurface)
+            {
+                escapePhase = EscapePhase.WaitingToStart;
+            }
             SyncHud();
         }
     }
