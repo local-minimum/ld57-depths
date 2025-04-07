@@ -50,9 +50,10 @@ public class Bucket : Singleton<Bucket, Bucket>
     AnimationCurve rideUpEasing;
 
     bool ridingUp;
-    public bool Riding => ridingUp || ridingUpOverworld;
+    public bool Riding => ridingUp || ridingUpOverworld || ridingDown;
     float rideStart;
     Vector3 rideFrom;
+    Vector3 rideTo;
 
     [SerializeField, Header("Ride Up Overworld")]
     float rideUpOverworldDuration = 1f;
@@ -98,6 +99,41 @@ public class Bucket : Singleton<Bucket, Bucket>
         jumpingOut = true;
     }
 
+    [SerializeField, Header("Ride Down")]
+    float rideDownSpeed = 20;
+    [SerializeField]
+    float rideDownDelayBeforeFollow = 1f;
+    [SerializeField]
+    AnimationCurve rideDownSpeedEasing;
+    [SerializeField]
+    Transform rideDownCameraPosition;
+    [SerializeField]
+    float rideDownGoodHeightMargin = 0.15f;
+    [SerializeField]
+    float rideDownAttack = 0.75f;
+    Level rideDownTargetLevel;
+    bool ridingDown;
+    bool ridingDownFollowing;
+    float rideDownDuration;
+
+    public void RideToLevel(Level level)
+    {
+        Camera.main.transform.SetParent(null);
+        rideDownTargetLevel = level;
+        rideStart = Time.timeSinceLevelLoad;
+        ridingDown = true;
+        ridingUp = false;
+        ridingUpOverworld = false;
+        ridingDownFollowing = false;
+
+        var offset = bucketRoot.position - transform.position;
+        rideFrom = Overworld.instance.BucketRestingPosition + offset;
+        rideTo = level.BucketPosition + offset;
+
+        rideDownDuration = Mathf.Abs((rideFrom - rideTo).y) / rideDownSpeed;
+        Debug.Log($"Going to {level.name} {rideFrom} -> {rideTo} taking {rideDownDuration}s at {rideDownSpeed}m/s");
+    }
+
     [ContextMenu("Ride up")]
     public void RideUp()
     {
@@ -105,6 +141,7 @@ public class Bucket : Singleton<Bucket, Bucket>
         rideStart = Time.timeSinceLevelLoad;
         ridingUp = true;
         ridingUpOverworld = false;
+        ridingDown = false;
     }
 
     public void RideUpOverworld()
@@ -112,6 +149,7 @@ public class Bucket : Singleton<Bucket, Bucket>
         rideStart = Time.timeSinceLevelLoad;
         ridingUpOverworld = true;
         ridingUp = false;
+        ridingDown = false;
     }
 
     private void Update()
@@ -131,6 +169,9 @@ public class Bucket : Singleton<Bucket, Bucket>
         else if (ridingUpOverworld)
         {
             ProgressRideUpOverworld();
+        } else if (ridingDown)
+        {
+            ProgressRideDown();
         }
     }
 
@@ -186,6 +227,42 @@ public class Bucket : Singleton<Bucket, Bucket>
         if (progress == 1)
         {
             ridingUpOverworld = false;
+        }
+    }
+
+    bool goodRidingDownCamPosition;
+
+    void ProgressRideDown()
+    {
+        var delta = Time.timeSinceLevelLoad - rideStart;
+        var progress = Mathf.Clamp01(delta / rideDownDuration);
+        var t = rideDownSpeedEasing.Evaluate(progress);
+        
+        if (!ridingDownFollowing && delta > rideDownDelayBeforeFollow)
+        {
+            Camera.main.transform.SetParent(transform);
+            ridingDownFollowing = true;
+            goodRidingDownCamPosition = false;
+        } else if (ridingDownFollowing && !goodRidingDownCamPosition)
+        {
+            Transform cTran = Camera.main.transform;
+            cTran.position = Vector3.Lerp(cTran.position, rideDownCameraPosition.position, rideDownAttack);
+            cTran.rotation = Quaternion.Lerp(cTran.rotation, rideDownCameraPosition.rotation, rideDownAttack);
+
+            if ((cTran.position - rideDownCameraPosition.position).magnitude < rideDownGoodHeightMargin)
+            {
+                cTran.position = rideDownCameraPosition.position;
+                cTran.rotation = rideDownCameraPosition.rotation;
+                goodRidingDownCamPosition = true;
+            }
+        }
+        bucketRoot.position = Vector3.Lerp(rideFrom, rideTo, t);
+
+        if (progress == 1)
+        {
+            ridingDown = false;
+            Camera.main.transform.SetParent(null);
+            rideDownTargetLevel.EnterLevel();
         }
     }
 }

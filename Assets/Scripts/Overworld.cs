@@ -31,8 +31,8 @@ public class Overworld : Singleton<Overworld, Overworld>
 
     int currentLevel;
 
-    public enum RidingPhase { None, RidingUp, JumpingOut, WalkingToStore, WalkingToWell };
-    RidingPhase ridingPhase = RidingPhase.None;
+    public enum OverWorldPhase { None, RidingUp, JumpingOut, WalkingToStore, WalkingToWell, JumpIn, RideDown };
+    OverWorldPhase overWorldPhase = OverWorldPhase.None;
 
     public void RideUp()
     {
@@ -42,7 +42,7 @@ public class Overworld : Singleton<Overworld, Overworld>
         cTrans.rotation = cameraPosition.rotation;
 
         Bucket.instance.RideUpOverworld();
-        ridingPhase = RidingPhase.RidingUp;
+        overWorldPhase = OverWorldPhase.RidingUp;
     }
 
     bool cameraSliding;
@@ -67,7 +67,7 @@ public class Overworld : Singleton<Overworld, Overworld>
     [ContextMenu("Start Walk to Store")]
     void StartWalkToStore()
     {
-        ridingPhase = RidingPhase.WalkingToStore;
+        overWorldPhase = OverWorldPhase.WalkingToStore;
         PlayerController.instance.currentTile = pathToStore.First();
         PlayerController.instance.Walk(pathToStore);
 
@@ -80,7 +80,7 @@ public class Overworld : Singleton<Overworld, Overworld>
     [ContextMenu("Start Walk to Well from Store")]
     void StartWalkToWell()
     {
-        ridingPhase = RidingPhase.WalkingToWell;
+        overWorldPhase = OverWorldPhase.WalkingToWell;
         PlayerController.instance.currentTile = pathToStore.Last();
         PlayerController.instance.Walk(pathToStore.Reverse<Tile>().ToList());
 
@@ -100,25 +100,29 @@ public class Overworld : Singleton<Overworld, Overworld>
     {
         if (cameraSliding) UpdateCameraSlide();
 
-        if (ridingPhase == RidingPhase.RidingUp && !Bucket.instance.Riding)
+        if (overWorldPhase == OverWorldPhase.RidingUp && !Bucket.instance.Riding)
         {
             Bucket.instance.JumpOutOfBucket(
                 PlayerController.instance.transform,
                 standNextToWellPosition
             );
-            ridingPhase = RidingPhase.JumpingOut;
-        } else if (ridingPhase == RidingPhase.JumpingOut && !Bucket.instance.Jumping) 
+            overWorldPhase = OverWorldPhase.JumpingOut;
+        } else if (overWorldPhase == OverWorldPhase.JumpingOut && !Bucket.instance.Jumping) 
         {
             StartWalkToStore();
-        } else if (ridingPhase == RidingPhase.WalkingToStore && !PlayerController.instance.walking & !cameraSliding)
+        } else if (overWorldPhase == OverWorldPhase.WalkingToStore && !PlayerController.instance.walking & !cameraSliding)
         {
-            ridingPhase = RidingPhase.None;
+            overWorldPhase = OverWorldPhase.None;
             StoreUI.instance.ShowStore();
         }
-        else if (ridingPhase == RidingPhase.WalkingToWell && !PlayerController.instance.walking)
+        else if (overWorldPhase == OverWorldPhase.WalkingToWell && !PlayerController.instance.walking)
         {
-            ridingPhase = RidingPhase.None;
-            Debug.Log("Do next level!");
+            overWorldPhase = OverWorldPhase.JumpIn;
+            Bucket.instance.JumpIntoBucket(PlayerController.instance.transform);
+        } else if (overWorldPhase == OverWorldPhase.JumpIn && !Bucket.instance.Jumping)
+        {
+            Bucket.instance.RideToLevel(levels[currentLevel]);
+            overWorldPhase = OverWorldPhase.None;
         }
     }
 }

@@ -103,6 +103,7 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
 
     public void HideHand()
     {
+        rollingHand = false;
         foreach (var die in dice)
         {
             die.gameObject.SetActive(false);

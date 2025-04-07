@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using UnityEditor.Profiling;
 using UnityEngine;
 
 public class Level : MonoBehaviour
@@ -11,6 +10,13 @@ public class Level : MonoBehaviour
 
     [SerializeField]
     Tile origin;
+
+    [SerializeField]
+    List<GameObject> infoHuds = new List<GameObject>();
+
+    public Vector3 BucketPosition =>
+        origin.transform.position + Vector3.left * 2f + Vector3.up * 0.25f;
+       
 
     List<Room> _rooms;
     List<Room> rooms
@@ -65,6 +71,7 @@ public class Level : MonoBehaviour
         roomsHUD.text = remaining > 0 ? $"Rooms: {remaining}" : "Level cleared";
     }
 
+    [ContextMenu("Jump into bucket")]
     void JumpIntoBucket()
     {
         escapePhase = EscapePhase.JumpingIntoBucket;
@@ -73,6 +80,20 @@ public class Level : MonoBehaviour
         Bucket.instance.JumpIntoBucket(PlayerController.instance.transform);
     }
 
+    public void EnterLevel()
+    {
+        foreach (var infohud in infoHuds)
+        {
+            infohud.SetActive(true);
+        }
+
+        SyncHud();
+        PlayerController.instance.HP = 6;
+
+        Bucket.instance.JumpOutOfBucket(PlayerController.instance.transform, origin.transform);
+        PlayerController.instance.currentTile = origin;
+        // TODO: Listen to when we're done
+    }
 
     private void Start()
     {
