@@ -27,6 +27,8 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
     public bool HasRemainingDice => dice.Any(d => !d.Used);
     public bool Empty => dice.Count == 0;
 
+    public int Size => dice.Count;
+
     private void Start()
     {
         for (int i = 0; i<startDiceCount; i++)
