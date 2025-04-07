@@ -8,6 +8,17 @@ using UnityEngine.UI;
 [RequireComponent(typeof(CanvasGroup))]
 public class FightActionUI : MonoBehaviour
 {
+    static List<FightActionUI> allActions = new List<FightActionUI>();
+
+    public static void ClearAllCooldowns()
+    {
+        foreach (var action in allActions)
+        {
+            action.cooldown = 0;
+            action.Sync();
+        }
+    }
+
     [SerializeField, Header("General")]
     int coolDownAfterUse = 0;
 
@@ -269,5 +280,18 @@ public class FightActionUI : MonoBehaviour
         {
             Focus = null;
         }
+    }
+
+    private void Start()
+    {
+        if (!allActions.Contains(this))
+        {
+            allActions.Add(this);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        allActions.Remove(this);
     }
 }

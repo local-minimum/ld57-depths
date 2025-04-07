@@ -74,6 +74,7 @@ public class Level : MonoBehaviour
     [ContextMenu("Jump into bucket")]
     void JumpIntoBucket()
     {
+        FightActionUI.ClearAllCooldowns();
         escapePhase = EscapePhase.JumpingIntoBucket;
         HintUI.instance.RemoveText(walkText);
         Debug.Log("Take the bucket up");

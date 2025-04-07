@@ -85,10 +85,13 @@ public class Overworld : Singleton<Overworld, Overworld>
     }
 
     [ContextMenu("Start Walk to Well from Store")]
-    void StartWalkToWell()
+    void StartWalkToWell(bool setTile = true)
     {
         overWorldPhase = OverWorldPhase.WalkingToWell;
-        PlayerController.instance.currentTile = pathToStore.Last();
+        if (setTile)
+        {
+            PlayerController.instance.currentTile = pathToStore.Last();
+        }
         var playerPosition = pathToStore.IndexOf(PlayerController.instance.currentTile);
 
         Debug.Log($"Player is on step {playerPosition}");
@@ -149,7 +152,7 @@ public class Overworld : Singleton<Overworld, Overworld>
             } else
             {
                 Poem.instance.Hide(initialStories - 1);
-                StartWalkToWell();
+                StartWalkToWell(false);
             }
         }
     }

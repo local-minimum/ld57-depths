@@ -82,6 +82,7 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
     {
         die.transform.SetParent(saveThrowPosition);
         die.transform.localPosition = Vector3.zero;
+        die.gameObject.SetActive(true);
         die.InstaRoll();
     }
 
@@ -95,7 +96,7 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
         if (!Full)
         {
             dice.Add(die);
-            NewRollDie(die);
+            RollDie(die);
             return true;
         }
         return false;
@@ -116,12 +117,12 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
     float nextRoll;
 
 
-    void NewRollDie(Dice die)
+    void RollDie(Dice die)
     {
         var idx = dice.IndexOf(die);
         if (idx < 0) return;
         die.gameObject.SetActive(true);
-        die.transform.SetParent(dicePositions[rollIdx]);
+        die.transform.SetParent(dicePositions[idx]);
         die.transform.localPosition = Vector3.zero;
         die.InstaRoll();
     }
@@ -132,7 +133,7 @@ public class DiceHand : Singleton<DiceHand, DiceHand>
 
         nextRoll = Time.timeSinceLevelLoad + timeBetweenDice;
         var die = dice[rollIdx];
-        NewRollDie(die);
+        RollDie(die);
         rollIdx++;
 
         if (rollIdx >= dice.Count)
