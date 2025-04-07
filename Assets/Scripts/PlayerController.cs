@@ -15,6 +15,12 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
     public static event PlayerEnterTileEvent OnEnterTile;
     public static event CoinChangeEvent OnCoinsChange;
 
+    [SerializeField]
+    Renderer billboard;
+
+    [SerializeField]
+    Texture defaultTexture;
+
     [SerializeField, Header("HUD")]
     Button endMoveButton;
 
@@ -38,6 +44,7 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
 
     [SerializeField]
     float verticalTranslationHeight;
+
 
     private int _hp = 6;
     public int HP {
@@ -99,6 +106,23 @@ public class PlayerController : Singleton<PlayerController, PlayerController>
             {
                 FightActionUI.Active.ConsumedWalk();
             }
+        }
+    }
+
+    public void SetCustomTexture(Texture texture)
+    {
+        if (billboard != null)
+        {
+            billboard.material.SetTexture("_BaseMap", texture);
+        }
+
+    }
+
+    public void RemoveCustomTexture()
+    {
+        if (billboard != null)
+        {
+            billboard.material.SetTexture("_BaseMap", defaultTexture);
         }
     }
 

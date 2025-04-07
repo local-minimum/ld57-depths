@@ -40,6 +40,8 @@ public class PlayerMeleeAttack : AbsPlayerAttack
 
     public override void SetTarget(Tile tile)
     {
+        BeginTextureSwap();
+
         Phase = AttackPhase.Animating;
 
         targetTile = tile;
@@ -86,6 +88,8 @@ public class PlayerMeleeAttack : AbsPlayerAttack
 
         if (progress == 1f)
         {
+            EndTextureSwap();
+
             pTransform.position = pTileTransform.position;
             pTileTransform.LookAt(targetTile.transform.position);
 
