@@ -89,7 +89,7 @@ public class StoreUI : Singleton<StoreUI, StoreUI>
 
     private void Update()
     {
-        if (Dice.Focus != null)
+        if (showingStore && Dice.Focus != null)
         {
             if (focusDie != Dice.Focus)
             {
@@ -110,7 +110,6 @@ public class StoreUI : Singleton<StoreUI, StoreUI>
             HintUI.instance.RemoveText(message);
             message = null;
             focusDie = null;
-            Debug.Log("Removing focus die");
         } else if (focusDie == null && message != null)
         {
             HintUI.instance.RemoveText(message);

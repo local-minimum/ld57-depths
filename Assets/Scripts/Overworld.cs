@@ -130,6 +130,8 @@ public class Overworld : Singleton<Overworld, Overworld>
         }
         else if (overWorldPhase == OverWorldPhase.WalkingToWell && !PlayerController.instance.walking)
         {
+            shownPart = currentLevel + 2;
+            Poem.instance.Show(shownPart);
             overWorldPhase = OverWorldPhase.JumpIn;
             Bucket.instance.JumpIntoBucket(PlayerController.instance.transform);
         } else if (overWorldPhase == OverWorldPhase.JumpIn && !Bucket.instance.Jumping)
@@ -138,6 +140,8 @@ public class Overworld : Singleton<Overworld, Overworld>
             overWorldPhase = OverWorldPhase.None;
         }
     }
+
+    int shownPart;
 
     [SerializeField]
     int initialStories = 2;
@@ -154,6 +158,10 @@ public class Overworld : Singleton<Overworld, Overworld>
                 Poem.instance.Hide(initialStories - 1);
                 StartWalkToWell(false);
             }
+        } else if (context.performed && shownPart > 0)
+        {
+            Poem.instance.Hide(shownPart);
+            shownPart = -1;
         }
     }
 
